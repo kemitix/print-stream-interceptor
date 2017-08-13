@@ -282,7 +282,7 @@ public class PassthroughPrintStreamInterceptorTest {
             bytesWritten.append(new String(buf).toCharArray(), off, len);
         }
 
-        String getWritten() {
+        private String getWritten() {
             return bytesWritten.toString();
         }
     }
