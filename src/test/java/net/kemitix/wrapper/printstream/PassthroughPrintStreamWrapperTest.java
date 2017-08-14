@@ -132,8 +132,7 @@ public class PassthroughPrintStreamWrapperTest {
     public void writeByteToSecondInterceptorDelegatesThroughFirstToOriginal() {
         //given
         final TestPrintStreamWrapper existing = new TestPrintStreamWrapper(intercepted);
-        final TestPrintStreamWrapper interceptor =
-                new TestPrintStreamWrapper((Wrapper<PrintStream>) existing);
+        final TestPrintStreamWrapper interceptor = new TestPrintStreamWrapper((Wrapper<PrintStream>) existing);
         //when
         interceptor.asCore()
                    .write('x');
@@ -148,8 +147,7 @@ public class PassthroughPrintStreamWrapperTest {
     public void writeByteArrayToSecondInterceptorDelegatesThroughFirstToOriginal() throws IOException {
         //given
         final TestPrintStreamWrapper existing = new TestPrintStreamWrapper(intercepted);
-        final TestPrintStreamWrapper interceptor =
-                new TestPrintStreamWrapper((Wrapper<PrintStream>) existing);
+        final TestPrintStreamWrapper interceptor = new TestPrintStreamWrapper((Wrapper<PrintStream>) existing);
         //when
         interceptor.asCore()
                    .write("test".getBytes());
@@ -164,8 +162,7 @@ public class PassthroughPrintStreamWrapperTest {
     public void writeByteArraySubsectionToSecondInterceptorDelegatesThroughFirstToOriginal() {
         //given
         final TestPrintStreamWrapper existing = new TestPrintStreamWrapper(intercepted);
-        final TestPrintStreamWrapper interceptor =
-                new TestPrintStreamWrapper((Wrapper<PrintStream>) existing);
+        final TestPrintStreamWrapper interceptor = new TestPrintStreamWrapper((Wrapper<PrintStream>) existing);
         //when
         interceptor.asCore()
                    .write("test".getBytes(), 1, 2);
@@ -223,7 +220,7 @@ public class PassthroughPrintStreamWrapperTest {
     public void whenTwoInterceptorsAndFirstIsRemovedThenCanWriteByteArraySubset() throws IOException {
         //given
         final TestPrintStreamWrapper first = new TestPrintStreamWrapper(intercepted);
-        final Wrapper<PrintStream> second = new TestPrintStreamWrapper((Wrapper<PrintStream> )first);
+        final Wrapper<PrintStream> second = new TestPrintStreamWrapper((Wrapper<PrintStream>) first);
         //when
         second.remove(first);
         second.asCore()
@@ -245,7 +242,8 @@ public class PassthroughPrintStreamWrapperTest {
                                         .withMessage("wrapper");
     }
 
-    @Test public void whenThreeInterceptorsAndFirstIsRemovedThenOthersRemain() {
+    @Test
+    public void whenThreeInterceptorsAndFirstIsRemovedThenOthersRemain() {
         //given
         final Wrapper<PrintStream> first = new TestPrintStreamWrapper(intercepted);
         final Wrapper<PrintStream> second = new TestPrintStreamWrapper(first);
