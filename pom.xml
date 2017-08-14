@@ -18,10 +18,10 @@
         <artifactId>kemitix-parent</artifactId>
         <version>3.2.4</version>
     </parent>
-    <artifactId>print-stream-interceptor</artifactId>
-    <version>0.1.0</version>
-    <name>PrintStream Interceptor</name>
-    <description>Stackable interceptors for PrintStream with copy, redirect, filter and passthrough.</description>
+    <artifactId>print-stream-wrapper</artifactId>
+    <version>0.1.0-SNAPSHOT</version>
+    <name>PrintStream Wrapper</name>
+    <description>Wrappers for PrintStream with copy, redirect, filter and passthrough implementations.</description>
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
