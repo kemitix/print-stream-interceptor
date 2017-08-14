@@ -19,45 +19,4 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package net.kemitix.interceptor.printstream;
-
-import java.io.PrintStream;
-import java.util.Optional;
-
-/**
- * Intercept writes to a {@code PrintStream}.
- *
- * @author Paul Campbell (pcampbell@kemitix.net)
- */
-public interface PrintStreamInterceptor {
-
-    /**
-     * Fetch the PrintStream being intercepted.
-     *
-     * @return the intercepted PrintStream
-     */
-    PrintStream getPrintStream();
-
-    /**
-     * Gets the PrintStreamInterceptor wrapped by this interceptor, if one is present.
-     *
-     * @return An Optional containing the wrapped interceptor if present, otherwise is empty
-     */
-    Optional<PrintStreamInterceptor> getWrappedInterceptor();
-
-    /**
-     * Remove the interceptor from the chain to interceptors.
-     *
-     * <p>Can't be this interceptor.</p>
-     *
-     * @param interceptor the interceptor to remove
-     */
-    void remove(PrintStreamInterceptor interceptor);
-
-    /**
-     * Provides the Interceptor's PrintStream interface.
-     *
-     * @return a PrintStream
-     */
-    PrintStream asPrintStream();
-}
+package net.kemitix.wrapper;
