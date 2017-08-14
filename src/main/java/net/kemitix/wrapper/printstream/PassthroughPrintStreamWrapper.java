@@ -19,10 +19,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package net.kemitix.interceptor.printstream;
+package net.kemitix.wrapper.printstream;
 
 import lombok.Getter;
 import lombok.NonNull;
+import net.kemitix.wrapper.Wrapper;
 
 import java.io.PrintStream;
 import java.util.Objects;
@@ -30,37 +31,37 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * Basic interceptor for {@link PrintStream} that simply passes all writes to the intercepted PrintStream, or to another
- * interceptor.
+ * Basic wrapper for {@link PrintStream} that simply passes all writes to the intercepted PrintStream, or to another
+ * wrapper.
  *
  * @author Paul Campbell (pcampbell@kemitix.net)
  */
-public class PassthroughPrintStreamInterceptor extends PrintStream implements PrintStreamInterceptor {
+public class PassthroughPrintStreamWrapper extends PrintStream implements Wrapper<PrintStream> {
 
     @Getter
-    private final PrintStream printStream;
+    private final PrintStream core;
 
-    private final AtomicReference<PrintStreamInterceptor> wrappedInterceptor = new AtomicReference<>();
+    private final AtomicReference<Wrapper<PrintStream>> innerWrapper = new AtomicReference<>();
 
     /**
      * Constructor to intercept a PrintStream.
      *
      * @param original the PrintStream to intercept
      */
-    public PassthroughPrintStreamInterceptor(final PrintStream original) {
+    public PassthroughPrintStreamWrapper(final PrintStream original) {
         super(original);
-        this.printStream = original;
+        this.core = original;
     }
 
     /**
-     * Constructor to intercept in existing PrintStreamInterceptor.
+     * Constructor to intercept in existing {@code Wrapper<PrintStream>}.
      *
-     * @param interceptor the interceptor to intercept
+     * @param interceptor the wrapper to intercept
      */
-    public PassthroughPrintStreamInterceptor(final PrintStreamInterceptor interceptor) {
-        super(Objects.requireNonNull(interceptor, "interceptor").getPrintStream());
-        this.printStream = interceptor.getPrintStream();
-        this.wrappedInterceptor.set(interceptor);
+    public PassthroughPrintStreamWrapper(final Wrapper<PrintStream> interceptor) {
+        super(Objects.requireNonNull(interceptor, "wrapper").getCore());
+        this.core = interceptor.getCore();
+        this.innerWrapper.set(interceptor);
     }
 
     /**
@@ -71,8 +72,8 @@ public class PassthroughPrintStreamInterceptor extends PrintStream implements Pr
      * <p>Note that the byte is written as given; to write a character that will be translated according to the
      * platform's default character encoding, use the print(char) or println(char) methods.</p>
      *
-     * <p>This implementation passes the byte, unmodified, to the intercepted {@link PrintStream} or {@link
-     * PrintStreamInterceptor}.</p>
+     * <p>This implementation passes the byte, unmodified, to the intercepted {@link PrintStream} or {@code
+     * Wrapper<PrintStream>}.</p>
      *
      * @param b The byte to be written
      *
@@ -81,12 +82,12 @@ public class PassthroughPrintStreamInterceptor extends PrintStream implements Pr
      */
     @Override
     public void write(final int b) {
-        if (wrappedInterceptor.get() != null) {
-            wrappedInterceptor.get()
-                              .asPrintStream()
-                              .write(b);
+        if (innerWrapper.get() != null) {
+            innerWrapper.get()
+                        .asCore()
+                        .write(b);
         } else {
-            printStream.write(b);
+            core.write(b);
         }
     }
 
@@ -98,8 +99,8 @@ public class PassthroughPrintStreamInterceptor extends PrintStream implements Pr
      * <p>Note that the bytes will be written as given; to write characters that will be translated according to the
      * platform's default character encoding, use the print(char) or println(char) methods.</p>
      *
-     * <p>This implementation passes the bytes, unmodified, to the intercepted {@link PrintStream} or {@link
-     * PrintStreamInterceptor}.</p>
+     * <p>This implementation passes the bytes, unmodified, to the intercepted {@link PrintStream} or {@code
+     * Wrapper<PrintStream>}.</p>
      *
      * @param buf A byte array
      * @param off Offset from which to start taking bytes
@@ -107,31 +108,31 @@ public class PassthroughPrintStreamInterceptor extends PrintStream implements Pr
      */
     @Override
     public void write(@NonNull final byte[] buf, final int off, final int len) {
-        if (wrappedInterceptor.get() != null) {
-            wrappedInterceptor.get()
-                              .asPrintStream()
-                              .write(buf, off, len);
+        if (innerWrapper.get() != null) {
+            innerWrapper.get()
+                        .asCore()
+                        .write(buf, off, len);
         } else {
-            printStream.write(buf, off, len);
+            core.write(buf, off, len);
         }
     }
 
     @Override
-    public final Optional<PrintStreamInterceptor> getWrappedInterceptor() {
-        return Optional.ofNullable(wrappedInterceptor.get());
+    public final Optional<Wrapper<PrintStream>> findInnerWrapper() {
+        return Optional.ofNullable(innerWrapper.get());
     }
 
     @Override
-    public final void remove(@NonNull final PrintStreamInterceptor interceptor) {
-        if (wrappedInterceptor.compareAndSet(interceptor, null)) {
+    public final void remove(@NonNull final Wrapper<PrintStream> wrapper) {
+        if (innerWrapper.compareAndSet(wrapper, null)) {
             return;
         }
-        Optional.ofNullable(wrappedInterceptor.get())
-                .ifPresent(wrapped -> wrapped.remove(interceptor));
+        Optional.ofNullable(innerWrapper.get())
+                .ifPresent(wrapped -> wrapped.remove(wrapper));
     }
 
     @Override
-    public final PrintStream asPrintStream() {
+    public final PrintStream asCore() {
         return this;
     }
 }

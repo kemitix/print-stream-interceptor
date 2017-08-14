@@ -19,45 +19,48 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package net.kemitix.interceptor.printstream;
+package net.kemitix.wrapper.printstream;
+
+import lombok.NonNull;
+import net.kemitix.wrapper.Wrapper;
 
 import java.io.PrintStream;
 import java.util.function.Predicate;
 
 /**
- * Interceptor for {@link PrintStream} that tests Strings with a supplied {@link Predicate} before writing to the
- * intercepted PrintStream, or to another interceptor.
+ * Wrapper for {@link PrintStream} that tests Strings with a supplied {@link Predicate} before writing to any inner
+ * wrapper or, if there isn't one, to the core {@link PrintStream}.
  *
- * <p>If the Predicate returns {@code false} for the String, then it will not be written.</p>
+ * <p>If the Predicate returns {@code false} for the String, then the String will not be written.</p>
  *
  * <p>N.B. only {@link #print(String)} and {@link #println(String)} will be checked against the Predicate. All other
  * {@code #write(*)}, {@code #print(*)} or {@code #println(*)} calls will always be written.</p>
  *
  * @author Paul Campbell (pcampbell@kemitix.net)
  */
-public class FilteredPrintStreamInterceptor extends PassthroughPrintStreamInterceptor {
+public class FilteredPrintStreamWrapper extends PassthroughPrintStreamWrapper {
 
     private final Predicate<String> predicate;
 
     /**
-     * Constructor to intercept in existing PrintStream.
+     * Constructor to wrap in existing PrintStream.
      *
-     * @param original  the PrintStream to intercept
+     * @param core      the PrintStream to wrap
      * @param predicate the predicate to apply to strings
      */
-    public FilteredPrintStreamInterceptor(final PrintStream original, final Predicate<String> predicate) {
-        super(original);
+    public FilteredPrintStreamWrapper(final PrintStream core, @NonNull final Predicate<String> predicate) {
+        super(core);
         this.predicate = predicate;
     }
 
     /**
-     * Constructor to intercept in existing PrintStreamInterceptor.
+     * Constructor to wrap in existing {@code Wrapper<PrintStream>}.
      *
-     * @param interceptor the interceptor to intercept
-     * @param predicate   the predicate to apply to strings
+     * @param wrapper   the wrapper to wrap
+     * @param predicate the predicate to apply to strings
      */
-    public FilteredPrintStreamInterceptor(final PrintStreamInterceptor interceptor, final Predicate<String> predicate) {
-        super(interceptor);
+    public FilteredPrintStreamWrapper(final Wrapper<PrintStream> wrapper, @NonNull final Predicate<String> predicate) {
+        super(wrapper);
         this.predicate = predicate;
     }
 

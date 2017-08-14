@@ -1,5 +1,6 @@
-package net.kemitix.interceptor.printstream;
+package net.kemitix.wrapper.printstream;
 
+import net.kemitix.wrapper.Wrapper;
 import org.assertj.core.api.ThrowableAssert;
 import org.junit.Before;
 import org.junit.Test;
@@ -14,11 +15,11 @@ import static org.mockito.Mockito.never;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 /**
- * Tests for {@link CopyPrintStreamInterceptor}.
+ * Tests for {@link CopyPrintStreamWrapper}.
  *
  * @author Paul Campbell (pcampbell@kemitix.net)
  */
-public class RedirectPrintStreamInterceptorTest {
+public class RedirectPrintStreamWrapperTest {
 
     @Mock
     private PrintStream original;
@@ -26,12 +27,12 @@ public class RedirectPrintStreamInterceptorTest {
     @Mock
     private PrintStream redirectTo;
 
-    private PrintStreamInterceptor existing;
+    private Wrapper<PrintStream> existing;
 
     @Before
     public void setUp() {
         initMocks(this);
-        existing = new PassthroughPrintStreamInterceptor(original);
+        existing = new PassthroughPrintStreamWrapper(original);
     }
 
     @Test
@@ -53,7 +54,7 @@ public class RedirectPrintStreamInterceptorTest {
         final ThrowableAssert.ThrowingCallable code = this::interceptExisting;
         //then
         assertThatNullPointerException().isThrownBy(code)
-                                        .withMessage("interceptor");
+                                        .withMessage("wrapper");
     }
 
     @Test
@@ -134,10 +135,10 @@ public class RedirectPrintStreamInterceptorTest {
     }
 
     private PrintStream interceptOriginal() {
-        return new RedirectPrintStreamInterceptor(original, redirectTo).asPrintStream();
+        return new RedirectPrintStreamWrapper(original, redirectTo).asCore();
     }
 
     private PrintStream interceptExisting() {
-        return new RedirectPrintStreamInterceptor(existing, redirectTo).asPrintStream();
+        return new RedirectPrintStreamWrapper(existing, redirectTo).asCore();
     }
 }
