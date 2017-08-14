@@ -4,6 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <properties>
+        <wrapper.version>0.1.0</wrapper.version>
         <junit.version>4.12</junit.version>
         <assertj.version>3.8.0</assertj.version>
         <mockito.version>2.8.47</mockito.version>
@@ -18,11 +19,16 @@
         <artifactId>kemitix-parent</artifactId>
         <version>3.2.4</version>
     </parent>
-    <artifactId>print-stream-interceptor</artifactId>
+    <artifactId>print-stream-wrapper</artifactId>
     <version>0.1.0</version>
-    <name>PrintStream Interceptor</name>
-    <description>Stackable interceptors for PrintStream with copy, redirect, filter and passthrough.</description>
+    <name>PrintStream Wrapper</name>
+    <description>Wrappers for PrintStream with copy, redirect, filter and passthrough implementations.</description>
     <dependencies>
+        <dependency>
+            <groupId>net.kemitix</groupId>
+            <artifactId>wrapper</artifactId>
+            <version>${wrapper.version}</version>
+        </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>

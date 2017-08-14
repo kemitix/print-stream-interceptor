@@ -19,55 +19,52 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package net.kemitix.interceptor.printstream;
+package net.kemitix.wrapper.printstream;
 
 import lombok.NonNull;
+import net.kemitix.wrapper.Wrapper;
 
 import java.io.PrintStream;
 
 /**
- * Interceptor for {@link PrintStream} that copies all writes to the supplied PrintStream and on to the intercepted
- * PrintStream, or to another interceptor.
+ * Wrapper for {@link PrintStream} that Redirects all writes to the supplied PrintStream and ignores any inner
+ * wrapper and the core {@link PrintStream}.
  *
  * @author Paul Campbell (pcampbell@kemitix.net)
  */
-public class CopyPrintStreamInterceptor extends PassthroughPrintStreamInterceptor {
+public class RedirectPrintStreamWrapper extends PassthroughPrintStreamWrapper {
 
-    private final PrintStream copyTo;
+    private final PrintStream redirectTo;
 
     /**
      * Constructor to intercept in existing PrintStream.
      *
-     * @param original the PrintStream to intercept
-     * @param copyTo   the PrintStream to copy writes to
+     * @param core       the PrintStream to wrap
+     * @param redirectTo the PrintStream to redirect writes to
      */
-    public CopyPrintStreamInterceptor(final PrintStream original, @NonNull final PrintStream copyTo) {
-        super(original);
-        this.copyTo = copyTo;
+    public RedirectPrintStreamWrapper(final PrintStream core, @NonNull final PrintStream redirectTo) {
+        super(core);
+        this.redirectTo = redirectTo;
     }
 
     /**
-     * Constructor to intercept in existing PrintStreamInterceptor.
+     * Constructor to intercept in existing {@code Wrapper<PrintStream>}.
      *
-     * @param interceptor the interceptor to intercept
-     * @param copyTo      the PrintStream to copy writes to
+     * @param wrapper    the wrapper to wrap
+     * @param redirectTo the PrintStream to redirect writes to
      */
-    public CopyPrintStreamInterceptor(
-            final PrintStreamInterceptor interceptor, @NonNull final PrintStream copyTo
-                                     ) {
-        super(interceptor);
-        this.copyTo = copyTo;
+    public RedirectPrintStreamWrapper(final Wrapper<PrintStream> wrapper, @NonNull final PrintStream redirectTo) {
+        super(wrapper);
+        this.redirectTo = redirectTo;
     }
 
     @Override
     public final void write(final int b) {
-        super.write(b);
-        copyTo.write(b);
+        redirectTo.write(b);
     }
 
     @Override
     public final void write(final byte[] buf, final int off, final int len) {
-        super.write(buf, off, len);
-        copyTo.write(buf, off, len);
+        redirectTo.write(buf, off, len);
     }
 }
