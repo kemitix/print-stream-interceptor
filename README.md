@@ -8,3 +8,40 @@ Wrappers for `PrintStream` with copy, redirect, filter and passthrough implement
 
 ## Usage
 
+Usage for the following (contrived) example:
+```
+println("...") ===> passthrough ===> copy ===> filter ---> redirect =x=> [coreArray]
+                                          \==> [copyArray]          \==> [redirectArray]
+```
+
+* `copyArray` receives everything
+* `redirectArray` receives only what passes the filter
+* `coreArray` receives nothing
+
+```java
+@Test
+public void usage() {
+    //given
+    final OutputStream coreArray = new ByteArrayOutputStream();
+    final PrintStream core = new PrintStream(coreArray);
+    final OutputStream redirectArray = new ByteArrayOutputStream();
+    final PrintStream redirectTo = new PrintStream(redirectArray);
+    final OutputStream copyArray = new ByteArrayOutputStream();
+    final PrintStream copyTo = new PrintStream(copyArray);
+    final String message1 = "This is an error message";
+    final String message2 = "This is an ordinary message";
+    //when
+    final Wrapper<PrintStream> redirectWrapper = new RedirectPrintStreamWrapper(core, redirectTo);
+    final Wrapper<PrintStream> filteredWrapper =
+            new FilteredPrintStreamWrapper(redirectWrapper, o -> o.contains("error"));
+    final Wrapper<PrintStream> copyWrapper = new CopyPrintStreamWrapper(filteredWrapper, copyTo);
+    final Wrapper<PrintStream> passthroughWrapper = new PassthroughPrintStreamWrapper(copyWrapper);
+    final PrintStream printStream = passthroughWrapper.asCore();
+    printStream.println(message1);
+    printStream.println(message2);
+    //then
+    assertThat(coreArray.toString()).contains("");
+    assertThat(redirectArray.toString()).contains(message1);
+    assertThat(copyArray.toString()).contains(message1, message2);
+}
+```
