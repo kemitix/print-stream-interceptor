@@ -4,14 +4,14 @@ import net.kemitix.wrapper.Wrapper;
 import org.assertj.core.api.ThrowableAssert;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mock;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.io.PrintStream;
 
-import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatNullPointerException;
-import static org.mockito.BDDMockito.then;
-import static org.mockito.MockitoAnnotations.initMocks;
 
 /**
  * Tests for {@link CopyPrintStreamWrapper}.
@@ -20,17 +20,22 @@ import static org.mockito.MockitoAnnotations.initMocks;
  */
 public class CopyPrintStreamWrapperTest {
 
-    @Mock
+    private OutputStream out;
+
     private PrintStream original;
 
-    @Mock
+    private OutputStream copy;
+
     private PrintStream copyTo;
 
     private Wrapper<PrintStream> existing;
 
     @Before
     public void setUp() {
-        initMocks(this);
+        out = new ByteArrayOutputStream();
+        original = new PrintStream(out);
+        copy = new ByteArrayOutputStream();
+        copyTo = new PrintStream(copy);
         existing = new PassthroughPrintStreamWrapper(original);
     }
 
@@ -83,10 +88,9 @@ public class CopyPrintStreamWrapperTest {
         //given
         final PrintStream interceptor = interceptOriginal();
         //when
-        assertThatCode(() -> interceptor.write('x')).doesNotThrowAnyException();
+        interceptor.write('x');
         //then
-        then(original).should()
-                    .write('x');
+        assertThat(out.toString()).isEqualTo("x");
     }
 
     @Test
@@ -94,32 +98,29 @@ public class CopyPrintStreamWrapperTest {
         //given
         final PrintStream interceptor = interceptOriginal();
         //when
-        assertThatCode(() -> interceptor.write('x')).doesNotThrowAnyException();
+        interceptor.write('x');
         //then
-        then(copyTo).should()
-                    .write('x');
+        assertThat(copy.toString()).isEqualTo("x");
     }
 
     @Test
-    public void whenWriteByteArrayThenWriteToOriginal() {
+    public void whenWriteByteArrayThenWriteToOriginal() throws IOException {
         //given
         final PrintStream interceptor = interceptOriginal();
         //when
-        assertThatCode(() -> interceptor.write("test".getBytes())).doesNotThrowAnyException();
+        interceptor.write("test".getBytes());
         //then
-        then(original).should()
-                    .write("test".getBytes(), 0, 4);
+        assertThat(out.toString()).isEqualTo("test");
     }
 
     @Test
-    public void whenWriteByteArrayThenWriteToCopyTo() {
+    public void whenWriteByteArrayThenWriteToCopyTo() throws IOException {
         //given
         final PrintStream interceptor = interceptOriginal();
         //when
-        assertThatCode(() -> interceptor.write("test".getBytes())).doesNotThrowAnyException();
+        interceptor.write("test".getBytes());
         //then
-        then(copyTo).should()
-                    .write("test".getBytes(), 0, 4);
+        assertThat(copy.toString()).isEqualTo("test");
     }
 
     @Test
@@ -127,10 +128,9 @@ public class CopyPrintStreamWrapperTest {
         //given
         final PrintStream interceptor = interceptExisting();
         //when
-        assertThatCode(() -> interceptor.write('x')).doesNotThrowAnyException();
+        interceptor.write('x');
         //then
-        then(copyTo).should()
-                    .write('x');
+        assertThat(copy.toString()).isEqualTo("x");
     }
 
     private PrintStream interceptOriginal() {
