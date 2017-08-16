@@ -112,7 +112,7 @@ public class PassthroughPrintStreamWrapperTest {
         //given
         final Wrapper<PrintStream> interceptor = new TestPrintStreamWrapper(intercepted);
         //when
-        final PrintStream result = interceptor.getCore();
+        final PrintStream result = interceptor.getWrapperCore();
         //then
         assertThat(result).isSameAs(intercepted);
     }
@@ -123,7 +123,7 @@ public class PassthroughPrintStreamWrapperTest {
         final Wrapper<PrintStream> existing = new TestPrintStreamWrapper(intercepted);
         final Wrapper<PrintStream> interceptor = new TestPrintStreamWrapper(existing);
         //when
-        final PrintStream result = interceptor.getCore();
+        final PrintStream result = interceptor.getWrapperCore();
         //then
         assertThat(result).isSameAs(intercepted);
     }
@@ -190,7 +190,7 @@ public class PassthroughPrintStreamWrapperTest {
         final TestPrintStreamWrapper first = new TestPrintStreamWrapper(intercepted);
         final Wrapper<PrintStream> second = new TestPrintStreamWrapper((Wrapper<PrintStream>) first);
         //when
-        second.remove(first);
+        second.removeWrapper(first);
         second.asCore()
               .write('x');
         //then
@@ -206,7 +206,7 @@ public class PassthroughPrintStreamWrapperTest {
         final TestPrintStreamWrapper first = new TestPrintStreamWrapper(intercepted);
         final Wrapper<PrintStream> second = new TestPrintStreamWrapper((Wrapper<PrintStream>) first);
         //when
-        second.remove(first);
+        second.removeWrapper(first);
         second.asCore()
               .write("test".getBytes());
         //then
@@ -222,7 +222,7 @@ public class PassthroughPrintStreamWrapperTest {
         final TestPrintStreamWrapper first = new TestPrintStreamWrapper(intercepted);
         final Wrapper<PrintStream> second = new TestPrintStreamWrapper((Wrapper<PrintStream>) first);
         //when
-        second.remove(first);
+        second.removeWrapper(first);
         second.asCore()
               .write("test".getBytes(), 1, 2);
         //then
@@ -238,7 +238,7 @@ public class PassthroughPrintStreamWrapperTest {
         final Wrapper<PrintStream> first = new TestPrintStreamWrapper(intercepted);
         final Wrapper<PrintStream> second = new TestPrintStreamWrapper(first);
         //when
-        assertThatNullPointerException().isThrownBy(() -> second.remove(null))
+        assertThatNullPointerException().isThrownBy(() -> second.removeWrapper(null))
                                         .withMessage("wrapper");
     }
 
@@ -249,7 +249,7 @@ public class PassthroughPrintStreamWrapperTest {
         final Wrapper<PrintStream> second = new TestPrintStreamWrapper(first);
         final Wrapper<PrintStream> third = new TestPrintStreamWrapper(second);
         //when
-        third.remove(first);
+        third.removeWrapper(first);
         //then
         assertThat(third.findInnerWrapper()).contains(second);
         assertThat(second.findInnerWrapper()).isEmpty();

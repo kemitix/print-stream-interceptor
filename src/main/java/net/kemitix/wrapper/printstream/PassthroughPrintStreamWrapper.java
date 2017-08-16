@@ -21,14 +21,12 @@
 
 package net.kemitix.wrapper.printstream;
 
-import lombok.Getter;
 import lombok.NonNull;
 import net.kemitix.wrapper.Wrapper;
+import net.kemitix.wrapper.WrapperState;
 
 import java.io.PrintStream;
 import java.util.Objects;
-import java.util.Optional;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Basic wrapper for {@link PrintStream} that simply passes all writes to the intercepted PrintStream, or to another
@@ -38,30 +36,27 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 public class PassthroughPrintStreamWrapper extends PrintStream implements Wrapper<PrintStream> {
 
-    @Getter
-    private final PrintStream core;
-
-    private final AtomicReference<Wrapper<PrintStream>> innerWrapper = new AtomicReference<>();
+    private final WrapperState<PrintStream> wrapperState;
 
     /**
-     * Constructor to intercept a PrintStream.
+     * Constructor to wrap a PrintStream.
      *
      * @param original the PrintStream to intercept
      */
     public PassthroughPrintStreamWrapper(final PrintStream original) {
         super(original);
-        this.core = original;
+        this.wrapperState = new WrapperState<>(original);
     }
 
     /**
-     * Constructor to intercept in existing {@code Wrapper<PrintStream>}.
+     * Constructor to wrap an existing {@code Wrapper<PrintStream>}.
      *
-     * @param interceptor the wrapper to intercept
+     * @param object the wrapper to wrap
      */
-    public PassthroughPrintStreamWrapper(final Wrapper<PrintStream> interceptor) {
-        super(Objects.requireNonNull(interceptor, "wrapper").getCore());
-        this.core = interceptor.getCore();
-        this.innerWrapper.set(interceptor);
+    public PassthroughPrintStreamWrapper(final Wrapper<PrintStream> object) {
+        super(Objects.requireNonNull(object, "wrapper")
+                     .getWrapperCore());
+        this.wrapperState = new WrapperState<>(object);
     }
 
     /**
@@ -82,13 +77,7 @@ public class PassthroughPrintStreamWrapper extends PrintStream implements Wrappe
      */
     @Override
     public void write(final int b) {
-        if (innerWrapper.get() != null) {
-            innerWrapper.get()
-                        .asCore()
-                        .write(b);
-        } else {
-            core.write(b);
-        }
+        getWrapperDelegate().write(b);
     }
 
     /**
@@ -108,31 +97,11 @@ public class PassthroughPrintStreamWrapper extends PrintStream implements Wrappe
      */
     @Override
     public void write(@NonNull final byte[] buf, final int off, final int len) {
-        if (innerWrapper.get() != null) {
-            innerWrapper.get()
-                        .asCore()
-                        .write(buf, off, len);
-        } else {
-            core.write(buf, off, len);
-        }
+        getWrapperDelegate().write(buf, off, len);
     }
 
     @Override
-    public final Optional<Wrapper<PrintStream>> findInnerWrapper() {
-        return Optional.ofNullable(innerWrapper.get());
-    }
-
-    @Override
-    public final void remove(@NonNull final Wrapper<PrintStream> wrapper) {
-        if (innerWrapper.compareAndSet(wrapper, null)) {
-            return;
-        }
-        Optional.ofNullable(innerWrapper.get())
-                .ifPresent(wrapped -> wrapped.remove(wrapper));
-    }
-
-    @Override
-    public final PrintStream asCore() {
-        return this;
+    public final WrapperState<PrintStream> getWrapperState() {
+        return wrapperState;
     }
 }
