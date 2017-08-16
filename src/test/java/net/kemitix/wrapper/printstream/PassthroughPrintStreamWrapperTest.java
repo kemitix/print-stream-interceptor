@@ -20,20 +20,17 @@
 package net.kemitix.wrapper.printstream;
 
 import net.kemitix.wrapper.Wrapper;
-import org.assertj.core.api.ThrowableAssert;
+import net.kemitix.wrapper.WrapperState;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mock;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.PrintStream;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatNullPointerException;
-import static org.mockito.BDDMockito.then;
-import static org.mockito.MockitoAnnotations.initMocks;
 
 /**
  * Tests for {@link PassthroughPrintStreamWrapper}s.
@@ -42,245 +39,99 @@ import static org.mockito.MockitoAnnotations.initMocks;
  */
 public class PassthroughPrintStreamWrapperTest {
 
-    @Mock
-    private PrintStream intercepted;
+    private OutputStream out;
+
+    private PrintStream original;
 
     @Before
     public void setUp() {
-        initMocks(this);
+        out = new ByteArrayOutputStream();
+        original = new PrintStream(out);
+    }
+
+    @Test
+    public void providesRequiredWrapperState() {
+        //given
+        final Wrapper<PrintStream> wrapper = new PassthroughPrintStreamWrapper(original);
+        //when
+        final WrapperState<PrintStream> state = wrapper.getWrapperState();
+        //then
+        assertThat(state).isNotNull();
     }
 
     @Test
     public void canWriteAByteUnmodified() {
         //given
-        final PrintStream interceptor = new TestPrintStreamWrapper(intercepted);
+        final PrintStream wrapper = new PassthroughPrintStreamWrapper(original);
         //when
-        final ThrowableAssert.ThrowingCallable code = () -> interceptor.write('x');
+        wrapper.write('x');
         //then
-        assertThatCode(code).doesNotThrowAnyException();
-        then(intercepted).should()
-                         .write('x');
+        assertThat(out.toString()).isEqualTo("x");
     }
 
     @Test
     public void canWriteByteArrayUnmodified() throws IOException {
         //given
-        final PrintStream interceptor = new TestPrintStreamWrapper(intercepted);
+        final PrintStream wrapper = new PassthroughPrintStreamWrapper(original);
         //when
-        final ThrowableAssert.ThrowingCallable code = () -> interceptor.write("test".getBytes());
+        wrapper.write("test".getBytes());
         //then
-        assertThatCode(code).doesNotThrowAnyException();
-        then(intercepted).should()
-                         .write("test".getBytes(), 0, 4);
+        assertThat(out.toString()).isEqualTo("test");
     }
 
     @Test
     public void canWriteByteArraySubsectionUnmodified() throws IOException {
         //given
-        final PrintStream interceptor = new TestPrintStreamWrapper(intercepted);
+        final PrintStream wrapper = new PassthroughPrintStreamWrapper(original);
         //when
-        final ThrowableAssert.ThrowingCallable code = () -> interceptor.write("test".getBytes(), 1, 2);
+        wrapper.write("test".getBytes(), 1, 2);
         //then
-        assertThatCode(code).doesNotThrowAnyException();
-        then(intercepted).should()
-                         .write("test".getBytes(), 1, 2);
+        assertThat(out.toString()).isEqualTo("es");
     }
 
     @Test
     public void writeNullByteArrayWillThrowNullPointerException() throws IOException {
         //given
-        final PrintStream interceptor = new TestPrintStreamWrapper(intercepted);
-        //when
-        final ThrowableAssert.ThrowingCallable code = () -> interceptor.write(null);
+        final PrintStream wrapper = new PassthroughPrintStreamWrapper(original);
         //then
-        assertThatNullPointerException().isThrownBy(code);
+        assertThatNullPointerException().isThrownBy(
+                //when
+                () -> wrapper.write(null));
     }
 
     @Test
     public void writeNullByteArraySubsectionWillThrowNullPointerException() {
         //given
-        final PrintStream interceptor = new TestPrintStreamWrapper(intercepted);
-        //when
-        final ThrowableAssert.ThrowingCallable code = () -> interceptor.write(null, 0, 0);
+        final PrintStream wrapper = new PassthroughPrintStreamWrapper(original);
         //then
-        assertThatNullPointerException().isThrownBy(code)
-                                        .withMessage("buf");
+        assertThatNullPointerException().isThrownBy(
+                //when
+                () -> wrapper.write(null, 0, 0));
     }
 
     @Test
-    public void canGetOriginalPrintStreamFromSingleInterceptor() {
+    public void writeByteToSecondWrapperDelegatesToFirst() {
         //given
-        final Wrapper<PrintStream> interceptor = new TestPrintStreamWrapper(intercepted);
+        final OutputStream redirectTo = new ByteArrayOutputStream();
+        final Wrapper<PrintStream> first = new RedirectPrintStreamWrapper(original, new PrintStream(redirectTo));
+        final PassthroughPrintStreamWrapper second = new PassthroughPrintStreamWrapper(first);
         //when
-        final PrintStream result = interceptor.getWrapperCore();
+        second.write('x');
         //then
-        assertThat(result).isSameAs(intercepted);
+        assertThat(redirectTo.toString()).isEqualTo("x");
+        assertThat(out.toString()).isEmpty();
     }
 
     @Test
-    public void canGetOriginalPrintStreamThroughMultipleInterceptors() {
+    public void writeStringToSecondWrapperDelegatesToFirst() {
         //given
-        final Wrapper<PrintStream> existing = new TestPrintStreamWrapper(intercepted);
-        final Wrapper<PrintStream> interceptor = new TestPrintStreamWrapper(existing);
+        final OutputStream redirectTo = new ByteArrayOutputStream();
+        final Wrapper<PrintStream> first = new RedirectPrintStreamWrapper(original, new PrintStream(redirectTo));
+        final PassthroughPrintStreamWrapper second = new PassthroughPrintStreamWrapper(first);
         //when
-        final PrintStream result = interceptor.getWrapperCore();
+        second.print("test");
         //then
-        assertThat(result).isSameAs(intercepted);
-    }
-
-    @Test
-    public void writeByteToSecondInterceptorDelegatesThroughFirstToOriginal() {
-        //given
-        final TestPrintStreamWrapper existing = new TestPrintStreamWrapper(intercepted);
-        final TestPrintStreamWrapper interceptor = new TestPrintStreamWrapper((Wrapper<PrintStream>) existing);
-        //when
-        interceptor.asCore()
-                   .write('x');
-        //then
-        assertThat(interceptor.getWritten()).isEqualTo("x");
-        assertThat(existing.getWritten()).isEqualTo("x");
-        then(intercepted).should()
-                         .write('x');
-    }
-
-    @Test
-    public void writeByteArrayToSecondInterceptorDelegatesThroughFirstToOriginal() throws IOException {
-        //given
-        final TestPrintStreamWrapper existing = new TestPrintStreamWrapper(intercepted);
-        final TestPrintStreamWrapper interceptor = new TestPrintStreamWrapper((Wrapper<PrintStream>) existing);
-        //when
-        interceptor.asCore()
-                   .write("test".getBytes());
-        //then
-        assertThat(interceptor.getWritten()).isEqualTo("test");
-        assertThat(existing.getWritten()).isEqualTo("test");
-        then(intercepted).should()
-                         .write("test".getBytes(), 0, 4);
-    }
-
-    @Test
-    public void writeByteArraySubsectionToSecondInterceptorDelegatesThroughFirstToOriginal() {
-        //given
-        final TestPrintStreamWrapper existing = new TestPrintStreamWrapper(intercepted);
-        final TestPrintStreamWrapper interceptor = new TestPrintStreamWrapper((Wrapper<PrintStream>) existing);
-        //when
-        interceptor.asCore()
-                   .write("test".getBytes(), 1, 2);
-        //then
-        assertThat(interceptor.getWritten()).isEqualTo("es");
-        assertThat(existing.getWritten()).isEqualTo("es");
-        then(intercepted).should()
-                         .write("test".getBytes(), 1, 2);
-    }
-
-    @Test
-    public void canGetOriginalInterceptor() {
-        //given
-        final Wrapper<PrintStream> first = new TestPrintStreamWrapper(intercepted);
-        final Wrapper<PrintStream> second = new TestPrintStreamWrapper(first);
-        //when
-        final Optional<Wrapper<PrintStream>> result = second.findInnerWrapper();
-        //then
-        assertThat(result).contains(first);
-    }
-
-    @Test
-    public void whenTwoInterceptorsAndFirstIsRemovedThenCanWriteByte() throws IOException {
-        //given
-        final TestPrintStreamWrapper first = new TestPrintStreamWrapper(intercepted);
-        final Wrapper<PrintStream> second = new TestPrintStreamWrapper((Wrapper<PrintStream>) first);
-        //when
-        second.removeWrapper(first);
-        second.asCore()
-              .write('x');
-        //then
-        assertThat(second.findInnerWrapper()).isEmpty();
-        assertThat(first.getWritten()).isEmpty();
-        then(intercepted).should()
-                         .write('x');
-    }
-
-    @Test
-    public void whenTwoInterceptorsAndFirstIsRemovedThenCanWriteByteArray() throws IOException {
-        //given
-        final TestPrintStreamWrapper first = new TestPrintStreamWrapper(intercepted);
-        final Wrapper<PrintStream> second = new TestPrintStreamWrapper((Wrapper<PrintStream>) first);
-        //when
-        second.removeWrapper(first);
-        second.asCore()
-              .write("test".getBytes());
-        //then
-        assertThat(second.findInnerWrapper()).isEmpty();
-        assertThat(first.getWritten()).isEmpty();
-        then(intercepted).should()
-                         .write("test".getBytes(), 0, 4);
-    }
-
-    @Test
-    public void whenTwoInterceptorsAndFirstIsRemovedThenCanWriteByteArraySubset() throws IOException {
-        //given
-        final TestPrintStreamWrapper first = new TestPrintStreamWrapper(intercepted);
-        final Wrapper<PrintStream> second = new TestPrintStreamWrapper((Wrapper<PrintStream>) first);
-        //when
-        second.removeWrapper(first);
-        second.asCore()
-              .write("test".getBytes(), 1, 2);
-        //then
-        assertThat(second.findInnerWrapper()).isEmpty();
-        assertThat(first.getWritten()).isEmpty();
-        then(intercepted).should()
-                         .write("test".getBytes(), 1, 2);
-    }
-
-    @Test
-    public void whenRemoveInterceptorIsNullThenThrowNullException() {
-        //given
-        final Wrapper<PrintStream> first = new TestPrintStreamWrapper(intercepted);
-        final Wrapper<PrintStream> second = new TestPrintStreamWrapper(first);
-        //when
-        assertThatNullPointerException().isThrownBy(() -> second.removeWrapper(null))
-                                        .withMessage("wrapper");
-    }
-
-    @Test
-    public void whenThreeInterceptorsAndFirstIsRemovedThenOthersRemain() {
-        //given
-        final Wrapper<PrintStream> first = new TestPrintStreamWrapper(intercepted);
-        final Wrapper<PrintStream> second = new TestPrintStreamWrapper(first);
-        final Wrapper<PrintStream> third = new TestPrintStreamWrapper(second);
-        //when
-        third.removeWrapper(first);
-        //then
-        assertThat(third.findInnerWrapper()).contains(second);
-        assertThat(second.findInnerWrapper()).isEmpty();
-    }
-
-    private class TestPrintStreamWrapper extends PassthroughPrintStreamWrapper {
-
-        private StringBuilder bytesWritten = new StringBuilder();
-
-        TestPrintStreamWrapper(final PrintStream out) {
-            super(out);
-        }
-
-        TestPrintStreamWrapper(final Wrapper<PrintStream> interceptor) {
-            super(interceptor);
-        }
-
-        @Override
-        public void write(final int b) {
-            super.write(b);
-            bytesWritten.append((char) b);
-        }
-
-        @Override
-        public void write(final byte[] buf, final int off, final int len) {
-            super.write(buf, off, len);
-            bytesWritten.append(new String(buf).toCharArray(), off, len);
-        }
-
-        private String getWritten() {
-            return bytesWritten.toString();
-        }
+        assertThat(redirectTo.toString()).isEqualTo("test");
+        assertThat(out.toString()).isEmpty();
     }
 }
