@@ -45,3 +45,13 @@ public void usage() {
     assertThat(copyArray.toString()).contains(message1, message2);
 }
 ```
+
+### Wrappers
+
+The following Wrappers are available:
+
+* PassthroughPrintStreamWrapper - does nothing (is a base for all other PrintStreamWrappers)
+* RedirectPrintStreamWrapper - writes all output to alternate PrintStream
+* FilteredPrintStreamWrapper - uses a Predicate to filter String writes
+* CopyPrintStreamWrapper - copies writes to another PrintStream
+* StringTransformPrintStreamWrapper - uses a Function to modify String writes
