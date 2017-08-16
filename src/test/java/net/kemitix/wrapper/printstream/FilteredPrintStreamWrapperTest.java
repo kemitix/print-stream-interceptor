@@ -66,7 +66,7 @@ public class FilteredPrintStreamWrapperTest {
         //when
         final FilteredPrintStreamWrapper interceptor = new FilteredPrintStreamWrapper(printStream, o -> true);
         //then
-        assertThat(interceptor.getCore()).isSameAs(printStream);
+        assertThat(interceptor.getWrapperCore()).isSameAs(printStream);
     }
 
     @Test
@@ -76,7 +76,7 @@ public class FilteredPrintStreamWrapperTest {
         //when
         final Wrapper<PrintStream> interceptor = new FilteredPrintStreamWrapper(existing, o -> true);
         //then
-        assertThat(interceptor.getCore()).isSameAs(printStream);
+        assertThat(interceptor.getWrapperCore()).isSameAs(printStream);
         assertThat(interceptor.findInnerWrapper()).contains(existing);
     }
 
