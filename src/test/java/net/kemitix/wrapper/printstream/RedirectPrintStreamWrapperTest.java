@@ -1,18 +1,16 @@
 package net.kemitix.wrapper.printstream;
 
 import net.kemitix.wrapper.Wrapper;
-import org.assertj.core.api.ThrowableAssert;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mock;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.io.PrintStream;
 
-import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatNullPointerException;
-import static org.mockito.BDDMockito.then;
-import static org.mockito.Mockito.never;
-import static org.mockito.MockitoAnnotations.initMocks;
 
 /**
  * Tests for {@link CopyPrintStreamWrapper}.
@@ -21,28 +19,35 @@ import static org.mockito.MockitoAnnotations.initMocks;
  */
 public class RedirectPrintStreamWrapperTest {
 
-    @Mock
-    private PrintStream original;
+    private OutputStream out;
 
-    @Mock
-    private PrintStream redirectTo;
+    private PrintStream original;
 
     private Wrapper<PrintStream> existing;
 
+    private PrintStream redirectTo;
+
+    private OutputStream redirect;
+
     @Before
     public void setUp() {
-        initMocks(this);
+        out = new ByteArrayOutputStream();
+        original = new PrintStream(out);
         existing = new PassthroughPrintStreamWrapper(original);
+        redirect = new ByteArrayOutputStream();
+        redirectTo = new PrintStream(redirect);
     }
 
     @Test
     public void requiresOriginalPrintStream() {
         //given
         original = null;
-        //when
-        final ThrowableAssert.ThrowingCallable code = this::interceptOriginal;
         //then
-        assertThatNullPointerException().isThrownBy(code)
+        assertThatNullPointerException().isThrownBy(() -> {
+            //when
+            new RedirectPrintStreamWrapper(original, redirectTo);
+        })
+                                        //and
                                         .withMessage("Null output stream");
     }
 
@@ -50,10 +55,12 @@ public class RedirectPrintStreamWrapperTest {
     public void requiresOriginalPrintStreamInterceptor() {
         //given
         existing = null;
-        //when
-        final ThrowableAssert.ThrowingCallable code = this::interceptExisting;
         //then
-        assertThatNullPointerException().isThrownBy(code)
+        assertThatNullPointerException().isThrownBy(() -> {
+            //when
+            new RedirectPrintStreamWrapper(existing, redirectTo);
+        })
+                                        //and
                                         .withMessage("wrapper");
     }
 
@@ -61,10 +68,12 @@ public class RedirectPrintStreamWrapperTest {
     public void requiresRedirectToOnPrintStream() {
         //given
         redirectTo = null;
-        //when
-        final ThrowableAssert.ThrowingCallable code = this::interceptOriginal;
         //then
-        assertThatNullPointerException().isThrownBy(code)
+        assertThatNullPointerException().isThrownBy(() -> {
+            //when
+            new RedirectPrintStreamWrapper(original, redirectTo);
+        })
+                                        //and
                                         .withMessage("redirectTo");
     }
 
@@ -72,73 +81,62 @@ public class RedirectPrintStreamWrapperTest {
     public void requiresRedirectToOnPrintStreamInterceptor() {
         //given
         redirectTo = null;
-        //when
-        final ThrowableAssert.ThrowingCallable code = this::interceptExisting;
         //then
-        assertThatNullPointerException().isThrownBy(code)
+        assertThatNullPointerException().isThrownBy(() -> {
+            //when
+            new RedirectPrintStreamWrapper(existing, redirectTo).asCore();
+        })
+                                        //and
                                         .withMessage("redirectTo");
     }
 
     @Test
     public void whenWriteByteThenDoNotWriteToOriginal() {
         //given
-        final PrintStream interceptor = interceptOriginal();
+        final PrintStream printStream = new RedirectPrintStreamWrapper(original, redirectTo).asCore();
         //when
-        assertThatCode(() -> interceptor.write('x')).doesNotThrowAnyException();
+        printStream.write('x');
         //then
-        then(original).should(never())
-                      .write('x');
+        assertThat(out.toString()).isEmpty();
     }
 
     @Test
     public void whenWriteByteThenWriteToRedirectTo() {
         //given
-        final PrintStream interceptor = interceptOriginal();
+        final PrintStream printStream = new RedirectPrintStreamWrapper(original, redirectTo).asCore();
         //when
-        assertThatCode(() -> interceptor.write('x')).doesNotThrowAnyException();
+        printStream.write('x');
         //then
-        then(redirectTo).should()
-                        .write('x');
+        assertThat(redirect.toString()).isEqualTo("x");
     }
 
     @Test
-    public void whenWriteByteArrayThenDoNotWriteToOriginal() {
+    public void whenWriteByteArrayThenDoNotWriteToOriginal() throws IOException {
         //given
-        final PrintStream interceptor = interceptOriginal();
+        final PrintStream printStream = new RedirectPrintStreamWrapper(original, redirectTo).asCore();
         //when
-        assertThatCode(() -> interceptor.write("test".getBytes())).doesNotThrowAnyException();
+        printStream.write("test".getBytes());
         //then
-        then(original).should(never())
-                      .write("test".getBytes(), 0, 4);
+        assertThat(out.toString()).isEmpty();
     }
 
     @Test
-    public void whenWriteByteArrayThenWriteToRedirectTo() {
+    public void whenWriteByteArrayThenWriteToRedirectTo() throws IOException {
         //given
-        final PrintStream interceptor = interceptOriginal();
+        final PrintStream printStream = new RedirectPrintStreamWrapper(original, redirectTo).asCore();
         //when
-        assertThatCode(() -> interceptor.write("test".getBytes())).doesNotThrowAnyException();
+        printStream.write("test".getBytes());
         //then
-        then(redirectTo).should()
-                        .write("test".getBytes(), 0, 4);
+        assertThat(redirect.toString()).isEqualTo("test");
     }
 
     @Test
     public void whenExistingInterceptorAndWriteByteThenWriteToRedirectTo() {
         //given
-        final PrintStream interceptor = interceptExisting();
+        final PrintStream printStream = new RedirectPrintStreamWrapper(existing, redirectTo).asCore();
         //when
-        assertThatCode(() -> interceptor.write('x')).doesNotThrowAnyException();
+        printStream.write('x');
         //then
-        then(redirectTo).should()
-                        .write('x');
-    }
-
-    private PrintStream interceptOriginal() {
-        return new RedirectPrintStreamWrapper(original, redirectTo).asCore();
-    }
-
-    private PrintStream interceptExisting() {
-        return new RedirectPrintStreamWrapper(existing, redirectTo).asCore();
+        assertThat(redirect.toString()).isEqualTo("x");
     }
 }
