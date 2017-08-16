@@ -4,35 +4,29 @@ import net.kemitix.wrapper.Wrapper;
 import org.assertj.core.api.ThrowableAssert;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.Mock;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.function.Predicate;
 
-import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatNullPointerException;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.BDDMockito.then;
-import static org.mockito.MockitoAnnotations.initMocks;
 
 /**
  * Tests for {@link FilteredPrintStreamWrapper}.
  */
 public class FilteredPrintStreamWrapperTest {
 
-    @Mock
     private PrintStream printStream;
 
-    @Captor
-    private ArgumentCaptor<byte[]> writeCaptor;
+    private OutputStream out;
 
     @Before
     public void setUp() {
-        initMocks(this);
+        out = new ByteArrayOutputStream();
+        printStream = new PrintStream(out);
     }
 
     @Test
@@ -85,49 +79,46 @@ public class FilteredPrintStreamWrapperTest {
     @Test
     public void whenPredicateTrueThenFilterPrintsLine() throws IOException {
         //given
-        final Predicate<String> predicate = "test"::equals;
+        final Predicate<String> predicate = o -> true;
         final FilteredPrintStreamWrapper interceptor = new FilteredPrintStreamWrapper(printStream, predicate);
         //when
         interceptor.println("test");
         //then
-        then(printStream).should()
-                         .write(writeCaptor.capture(), eq(0), eq(4));
-        assertThat(writeCaptor.getValue()).contains(new byte[]{'t', 'e', 's', 't', '\n'});
+        assertThat(out.toString()).isEqualTo("test\n");
     }
 
     @Test
     public void whenPredicateTrueThenFilterPrintsString() throws IOException {
         //given
-        final Predicate<String> predicate = "test"::equals;
+        final Predicate<String> predicate = o -> true;
         final FilteredPrintStreamWrapper interceptor = new FilteredPrintStreamWrapper(printStream, predicate);
         //when
         interceptor.print("test");
         //then
-        then(printStream).should()
-                         .write(writeCaptor.capture(), eq(0), eq(4));
-        assertThat(writeCaptor.getValue()).contains(new byte[]{'t', 'e', 's', 't'});
+        assertThat(out.toString()).isEqualTo("test");
     }
 
     @Test
     public void whenPredicateFalseThenFilterIgnoresPrint() {
         //given
-        final Predicate<String> predicate = "garbage"::equals;
-        final FilteredPrintStreamWrapper interceptor = new FilteredPrintStreamWrapper(printStream, predicate);
+        final Predicate<String> predicate = o -> false;
+        final OutputStream out = new ByteArrayOutputStream();
+        final FilteredPrintStreamWrapper interceptor = new FilteredPrintStreamWrapper(new PrintStream(out), predicate);
         //when
-        assertThatCode(() -> interceptor.print("test")).doesNotThrowAnyException();
+        interceptor.print("test");
         //then
-        then(printStream).shouldHaveZeroInteractions();
+        assertThat(out.toString()).isEmpty();
     }
 
     @Test
     public void whenPredicateFalseThenFilterIgnoresPrintln() {
         //given
-        final Predicate<String> predicate = "garbage"::equals;
-        final FilteredPrintStreamWrapper interceptor = new FilteredPrintStreamWrapper(printStream, predicate);
+        final Predicate<String> predicate = o -> false;
+        final FilteredPrintStreamWrapper interceptor = new FilteredPrintStreamWrapper(new PrintStream(out), predicate);
         //when
-        assertThatCode(() -> interceptor.println("test")).doesNotThrowAnyException();
+        interceptor.println("test");
         //then
-        then(printStream).shouldHaveZeroInteractions();
+        assertThat(out.toString()).isEmpty();
     }
 
     @Test
@@ -135,9 +126,8 @@ public class FilteredPrintStreamWrapperTest {
         //given
         final FilteredPrintStreamWrapper interceptor = new FilteredPrintStreamWrapper(printStream, o -> false);
         //when
-        assertThatCode(() -> interceptor.write('x')).doesNotThrowAnyException();
+        interceptor.write('x');
         //then
-        then(printStream).should()
-                         .write('x');
+        assertThat(out.toString()).isEqualTo("x");
     }
 }
