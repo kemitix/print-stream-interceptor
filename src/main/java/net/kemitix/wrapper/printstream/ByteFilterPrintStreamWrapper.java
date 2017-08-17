@@ -28,28 +28,27 @@ import java.io.PrintStream;
 import java.util.function.Predicate;
 
 /**
- * Wrapper for {@link PrintStream} that tests Strings with a supplied {@link Predicate} before writing to any inner
+ * Wrapper for {@link PrintStream} that tests bytes with a supplied {@link Predicate} before writing to any inner
  * wrapper or, if there isn't one, to the core {@link PrintStream}.
  *
- * <p>If the Predicate returns {@code false} for the String, then the String will not be written.</p>
- *
- * <p>N.B. only {@link #print(String)} and {@link #println(String)} will be checked against the Predicate. All other
- * {@code #write(*)}, {@code #print(*)} or {@code #println(*)} calls will always be written.</p>
+ * <p>If the Predicate returns {@code false} for the byte, then the byte will not be written.</p>
  *
  * @author Paul Campbell (pcampbell@kemitix.net)
  */
-public class FilteredPrintStreamWrapper extends PassthroughPrintStreamWrapper {
+public class ByteFilterPrintStreamWrapper extends PassthroughPrintStreamWrapper {
 
-    private final Predicate<String> predicate;
+    private final Predicate<Byte> predicate;
 
     /**
      * Constructor to wrap in existing PrintStream.
      *
-     * @param core      the PrintStream to wrap
-     * @param predicate the predicate to apply to strings
+     * @param original  the PrintStream to wrap
+     * @param predicate the predicate to apply to bytes
      */
-    public FilteredPrintStreamWrapper(final PrintStream core, @NonNull final Predicate<String> predicate) {
-        super(core);
+    public ByteFilterPrintStreamWrapper(
+            final PrintStream original, @NonNull final Predicate<Byte> predicate
+                                       ) {
+        super(original);
         this.predicate = predicate;
     }
 
@@ -57,24 +56,26 @@ public class FilteredPrintStreamWrapper extends PassthroughPrintStreamWrapper {
      * Constructor to wrap in existing {@code Wrapper<PrintStream>}.
      *
      * @param wrapper   the wrapper to wrap
-     * @param predicate the predicate to apply to strings
+     * @param predicate the predicate to apply to bytes
      */
-    public FilteredPrintStreamWrapper(final Wrapper<PrintStream> wrapper, @NonNull final Predicate<String> predicate) {
+    public ByteFilterPrintStreamWrapper(
+            final Wrapper<PrintStream> wrapper, @NonNull final Predicate<Byte> predicate
+                                       ) {
         super(wrapper);
         this.predicate = predicate;
     }
 
     @Override
-    public final void print(final String s) {
-        if (predicate.test(s)) {
-            super.print(s);
+    public final void write(final int b) {
+        if (predicate.test((byte) b)) {
+            super.write(b);
         }
     }
 
     @Override
-    public final void println(final String s) {
-        if (predicate.test(s)) {
-            super.println(s);
+    public final void write(final byte[] buf, final int off, final int len) {
+        for (int i = off; i <= off + len - 1; i++) {
+            write(buf[i]);
         }
     }
 }

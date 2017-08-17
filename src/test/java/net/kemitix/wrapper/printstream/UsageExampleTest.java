@@ -41,8 +41,7 @@ public class UsageExampleTest {
      * println("...") ===> passthrough ===> copy ===> filter ---> redirect =x=> [coreArray]
      *                                           \==> [copyArray]          \==> [redirectArray]
      * </pre>
-     * <ul><li>copyArray receives everything</li>
-     * <li>redirectArray receives only what passes the filter</li>
+     * <ul><li>copyArray receives everything</li> <li>redirectArray receives only what passes the filter</li>
      * <li>coreArray receives nothing</li></ul>
      */
     @Test
@@ -59,7 +58,7 @@ public class UsageExampleTest {
         //when
         final Wrapper<PrintStream> redirectWrapper = new RedirectPrintStreamWrapper(core, redirectTo);
         final Wrapper<PrintStream> filteredWrapper =
-                new FilteredPrintStreamWrapper(redirectWrapper, o -> o.contains("error"));
+                new StringFilterPrintStreamWrapper(redirectWrapper, o -> o.contains("error"));
         final Wrapper<PrintStream> copyWrapper = new CopyPrintStreamWrapper(filteredWrapper, copyTo);
         final Wrapper<PrintStream> passthroughWrapper = new PassthroughPrintStreamWrapper(copyWrapper);
         final PrintStream printStream = passthroughWrapper.asCore();
