@@ -27,6 +27,7 @@ import net.kemitix.wrapper.WrapperState;
 
 import java.io.PrintStream;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 /**
  * Basic wrapper for {@link PrintStream} that simply passes all writes to the intercepted PrintStream, or to another
@@ -103,5 +104,25 @@ public class PassthroughPrintStreamWrapper extends PrintStream implements Wrappe
     @Override
     public final WrapperState<PrintStream> getWrapperState() {
         return wrapperState;
+    }
+
+    /**
+     * Scan the buffer, from off to len, and give it to the byteConsumer.
+     *
+     * @param buf          the buffer to process
+     * @param off          the offset within the buffer to begin
+     * @param len          the number of bytes to process
+     * @param byteConsumer the consumer to process each byte
+     */
+    protected final void forEachByteInBuffer(
+            final byte[] buf, final int off, final int len, final Consumer<Byte> byteConsumer
+                                            ) {
+        if (len < 0) {
+            throw new IndexOutOfBoundsException(
+                    String.format("buf.length: %d, off: %d, len: %d", buf.length, off, len));
+        }
+        for (int i = 0; i < len; i++) {
+            byteConsumer.accept(buf[off + i]);
+        }
     }
 }
