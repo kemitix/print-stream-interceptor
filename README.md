@@ -33,7 +33,7 @@ public void usage() {
     //when
     final Wrapper<PrintStream> redirectWrapper = new RedirectPrintStreamWrapper(core, redirectTo);
     final Wrapper<PrintStream> filteredWrapper =
-            new FilteredPrintStreamWrapper(redirectWrapper, o -> o.contains("error"));
+            new StringFilteredPrintStreamWrapper(redirectWrapper, o -> o.contains("error"));
     final Wrapper<PrintStream> copyWrapper = new CopyPrintStreamWrapper(filteredWrapper, copyTo);
     final Wrapper<PrintStream> passthroughWrapper = new PassthroughPrintStreamWrapper(copyWrapper);
     final PrintStream printStream = passthroughWrapper.asCore();
@@ -45,3 +45,15 @@ public void usage() {
     assertThat(copyArray.toString()).contains(message1, message2);
 }
 ```
+
+### Wrappers
+
+The following Wrappers are available:
+
+* PassthroughPrintStreamWrapper - does nothing (is a base for all other PrintStreamWrappers)
+* RedirectPrintStreamWrapper - writes all output to alternate PrintStream
+* StringFilterPrintStreamWrapper - uses a Predicate to filter String writes
+* ByteFilterPrintStreamWrapper - uses a Predicate to filter byte writes
+* CopyPrintStreamWrapper - copies writes to another PrintStream
+* StringTransformPrintStreamWrapper - uses a Function to modify String writes
+* ByteTransformPrintStreamWrapper - uses a Function to modify byte writes
