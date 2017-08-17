@@ -55,3 +55,4 @@ The following Wrappers are available:
 * FilteredPrintStreamWrapper - uses a Predicate to filter String writes
 * CopyPrintStreamWrapper - copies writes to another PrintStream
 * StringTransformPrintStreamWrapper - uses a Function to modify String writes
+* ByteTransformPrintStreamWrapper - uses a Function to modify byte writes
