@@ -53,7 +53,7 @@ The following Wrappers are available:
 * PassthroughPrintStreamWrapper - does nothing (is a base for all other PrintStreamWrappers)
 * RedirectPrintStreamWrapper - writes all output to alternate PrintStream
 * StringFilterPrintStreamWrapper - uses a Predicate to filter String writes
-* ByteFilteredPrintStreamWrapper - uses a Predicate to filter byte writes
+* ByteFilterPrintStreamWrapper - uses a Predicate to filter byte writes
 * CopyPrintStreamWrapper - copies writes to another PrintStream
 * StringTransformPrintStreamWrapper - uses a Function to modify String writes
 * ByteTransformPrintStreamWrapper - uses a Function to modify byte writes
