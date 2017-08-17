@@ -1,7 +1,21 @@
 CHANGELOG
 =========
 
+0.2.0
+-----
+
+* Upgrade `wrapper` to 0.2.0
+* Add `StringTransformPrintStreamWrapper`
+* Rewrite tests using real `PrintStream` objects
+* Add `ByteTransformPrintStreamWrapper`
+* Add `ByteFilterPrintStreamWrapper`
+* Rename `FilteredPrintStreamWrapper` as `StringFilterPrintStreamWrapper`
+
 0.1.0
 -----
 
 * Initial release
+* Add `PassthroughPrintStreamWrapper`
+* Add `RedirectPrintStreamWrapper`
+* Add `CopyPrintStreamWrapper`
+* Add `FilteredPrintStreamWrapper`
