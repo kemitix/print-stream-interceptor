@@ -74,8 +74,6 @@ public class ByteFilterPrintStreamWrapper extends PassthroughPrintStreamWrapper 
 
     @Override
     public final void write(final byte[] buf, final int off, final int len) {
-        for (int i = off; i <= off + len - 1; i++) {
-            write(buf[i]);
-        }
+        forEachByteInBuffer(buf, off, len, this::write);
     }
 }

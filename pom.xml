@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <properties>
-        <wrapper.version>0.2.0</wrapper.version>
+        <wrapper.version>0.3.0</wrapper.version>
         <junit.version>4.12</junit.version>
         <assertj.version>3.8.0</assertj.version>
 
@@ -19,7 +19,7 @@
         <version>3.2.4</version>
     </parent>
     <artifactId>print-stream-wrapper</artifactId>
-    <version>0.2.0</version>
+    <version>0.3.0</version>
     <name>PrintStream Wrapper</name>
     <description>Wrappers for PrintStream with copy, redirect, filter and passthrough implementations.</description>
     <dependencies>

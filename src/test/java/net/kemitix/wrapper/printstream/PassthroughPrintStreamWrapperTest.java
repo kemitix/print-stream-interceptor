@@ -21,6 +21,7 @@ package net.kemitix.wrapper.printstream;
 
 import net.kemitix.wrapper.Wrapper;
 import net.kemitix.wrapper.WrapperState;
+import org.assertj.core.api.ThrowableAssert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -28,8 +29,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatNullPointerException;
 
 /**
@@ -133,5 +136,105 @@ public class PassthroughPrintStreamWrapperTest {
         //then
         assertThat(redirectTo.toString()).isEqualTo("test");
         assertThat(out.toString()).isEmpty();
+    }
+
+    @Test
+    public void whenOffsetAndLengthGreaterThenBufLengthThenThrowException() {
+        //given
+        final byte[] buf = "test".getBytes();
+        final int off = 1;
+        final int len = 4;
+        final PassthroughPrintStreamWrapper wrapper = new PassthroughPrintStreamWrapper(original);
+        //when
+        final ThrowableAssert.ThrowingCallable code = () -> wrapper.forEachByteInBuffer(buf, off, len, o -> {
+        });
+        //then
+        assertThatCode(code).isInstanceOf(IndexOutOfBoundsException.class);
+    }
+
+    @Test
+    public void whenOffsetLessThanZeroThenThrowException() {
+        //given
+        final byte[] buf = "test".getBytes();
+        final int off = -1;
+        final int len = 4;
+        final PassthroughPrintStreamWrapper wrapper = new PassthroughPrintStreamWrapper(original);
+        //when
+        final ThrowableAssert.ThrowingCallable code = () -> wrapper.forEachByteInBuffer(buf, off, len, o -> {
+        });
+        //then
+        assertThatCode(code).isInstanceOf(IndexOutOfBoundsException.class);
+    }
+
+    @Test
+    public void whenLengthIsZeroThenIsValid() {
+        //given
+        final byte[] buf = "test".getBytes();
+        final int off = 3;
+        final int len = 0;
+        final PassthroughPrintStreamWrapper wrapper = new PassthroughPrintStreamWrapper(original);
+        final ThrowableAssert.ThrowingCallable code = () -> {
+            //when
+            wrapper.forEachByteInBuffer(buf, off, len, o -> {
+            });
+        };
+        //then
+        assertThatCode(code).doesNotThrowAnyException();
+    }
+
+    @Test
+    public void whenLengthLessThanZeroThenThrowException() {
+        //given
+        final byte[] buf = "test".getBytes();
+        final int off = 3;
+        final int len = -1;
+        final PassthroughPrintStreamWrapper wrapper = new PassthroughPrintStreamWrapper(original);
+        //when
+        final ThrowableAssert.ThrowingCallable code = () -> wrapper.forEachByteInBuffer(buf, off, len, o -> {
+        });
+        //then
+        assertThatCode(code).isInstanceOf(IndexOutOfBoundsException.class);
+    }
+
+    @Test
+    public void whenOffsetGreaterThanBufLengthThenThrowException() {
+        //given
+        final byte[] buf = "test".getBytes();
+        final int off = 4;
+        final int len = 1;
+        final PassthroughPrintStreamWrapper wrapper = new PassthroughPrintStreamWrapper(original);
+        //when
+        final ThrowableAssert.ThrowingCallable code = () -> wrapper.forEachByteInBuffer(buf, off, len, o -> {
+        });
+        //then
+        assertThatCode(code).isInstanceOf(IndexOutOfBoundsException.class);
+    }
+
+    @Test
+    public void whenLengthGreaterThanBufLengthThenThrowException() {
+        //given
+        final byte[] buf = "test".getBytes();
+        final int off = 0;
+        final int len = 5;
+        final PassthroughPrintStreamWrapper wrapper = new PassthroughPrintStreamWrapper(original);
+        //when
+        final ThrowableAssert.ThrowingCallable code = () -> wrapper.forEachByteInBuffer(buf, off, len, o -> {
+        });
+        //then
+        assertThatCode(code).isInstanceOf(IndexOutOfBoundsException.class);
+    }
+
+    @Test
+    public void whenOffsetAndLengthMatchFullBufThenIsValid() {
+        //given
+        final byte[] buf = "test".getBytes();
+        final int off = 0;
+        final int len = 4;
+        final PassthroughPrintStreamWrapper wrapper = new PassthroughPrintStreamWrapper(original);
+        final AtomicBoolean aBoolean = new AtomicBoolean();
+        //when
+        wrapper.forEachByteInBuffer(buf, off, len, o -> aBoolean.set(true));
+        //then
+        assertThat(aBoolean).isTrue();
     }
 }

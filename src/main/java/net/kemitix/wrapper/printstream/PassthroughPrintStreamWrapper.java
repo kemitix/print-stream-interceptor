@@ -22,11 +22,13 @@
 package net.kemitix.wrapper.printstream;
 
 import lombok.NonNull;
+import lombok.val;
 import net.kemitix.wrapper.Wrapper;
 import net.kemitix.wrapper.WrapperState;
 
 import java.io.PrintStream;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 /**
  * Basic wrapper for {@link PrintStream} that simply passes all writes to the intercepted PrintStream, or to another
@@ -77,7 +79,8 @@ public class PassthroughPrintStreamWrapper extends PrintStream implements Wrappe
      */
     @Override
     public void write(final int b) {
-        getWrapperDelegate().write(b);
+        val delegate = getWrapperDelegate();
+        delegate.write(b);
     }
 
     /**
@@ -97,11 +100,32 @@ public class PassthroughPrintStreamWrapper extends PrintStream implements Wrappe
      */
     @Override
     public void write(@NonNull final byte[] buf, final int off, final int len) {
-        getWrapperDelegate().write(buf, off, len);
+        val delegate = getWrapperDelegate();
+        delegate.write(buf, off, len);
     }
 
     @Override
     public final WrapperState<PrintStream> getWrapperState() {
         return wrapperState;
+    }
+
+    /**
+     * Scan the buffer, from off to len, and give it to the byteConsumer.
+     *
+     * @param buf          the buffer to process
+     * @param off          the offset within the buffer to begin
+     * @param len          the number of bytes to process
+     * @param byteConsumer the consumer to process each byte
+     */
+    protected final void forEachByteInBuffer(
+            final byte[] buf, final int off, final int len, final Consumer<Byte> byteConsumer
+                                            ) {
+        if (len < 0) {
+            throw new IndexOutOfBoundsException(
+                    String.format("buf.length: %d, off: %d, len: %d", buf.length, off, len));
+        }
+        for (int i = 0; i < len; i++) {
+            byteConsumer.accept(buf[off + i]);
+        }
     }
 }
