@@ -22,6 +22,7 @@
 package net.kemitix.wrapper.printstream;
 
 import lombok.NonNull;
+import lombok.val;
 import net.kemitix.wrapper.Wrapper;
 import net.kemitix.wrapper.WrapperState;
 
@@ -78,7 +79,8 @@ public class PassthroughPrintStreamWrapper extends PrintStream implements Wrappe
      */
     @Override
     public void write(final int b) {
-        getWrapperDelegate().write(b);
+        val delegate = getWrapperDelegate();
+        delegate.write(b);
     }
 
     /**
@@ -98,7 +100,8 @@ public class PassthroughPrintStreamWrapper extends PrintStream implements Wrappe
      */
     @Override
     public void write(@NonNull final byte[] buf, final int off, final int len) {
-        getWrapperDelegate().write(buf, off, len);
+        val delegate = getWrapperDelegate();
+        delegate.write(buf, off, len);
     }
 
     @Override
