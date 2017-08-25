@@ -1,6 +1,12 @@
 CHANGELOG
 =========
 
+0.3.0
+-----
+
+* Upgrade `wrapper` to 0.3.0
+* Improved byte array writing
+
 0.2.0
 -----
 
