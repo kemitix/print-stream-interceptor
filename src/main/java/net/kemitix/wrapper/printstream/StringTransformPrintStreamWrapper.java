@@ -22,7 +22,6 @@
 package net.kemitix.wrapper.printstream;
 
 import lombok.NonNull;
-import net.kemitix.wrapper.Wrapper;
 
 import java.io.PrintStream;
 import java.util.function.Function;
@@ -57,7 +56,8 @@ public class StringTransformPrintStreamWrapper extends PassthroughPrintStreamWra
      * @param transformer the function to transform the string
      */
     public StringTransformPrintStreamWrapper(
-            final Wrapper<PrintStream> wrapper, @NonNull final Function<String, String> transformer
+            final PrintStreamWrapper wrapper,
+            @NonNull final Function<String, String> transformer
                                             ) {
         super(wrapper);
         this.transformer = transformer;
@@ -65,6 +65,6 @@ public class StringTransformPrintStreamWrapper extends PassthroughPrintStreamWra
 
     @Override
     public final void print(final String s) {
-        getWrapperDelegate().print(transformer.apply(s));
+        getPrintStreamDelegate().print(transformer.apply(s));
     }
 }

@@ -1,11 +1,9 @@
 package net.kemitix.wrapper.printstream;
 
-import net.kemitix.wrapper.Wrapper;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.function.Predicate;
@@ -22,7 +20,7 @@ public class StringFilterPrintStreamWrapperTest {
 
     private PrintStream original;
 
-    private Wrapper<PrintStream> existing;
+    private PrintStreamWrapper existing;
 
     private Predicate<String> predicate;
 
@@ -60,7 +58,7 @@ public class StringFilterPrintStreamWrapperTest {
     }
 
     @Test
-    public void whenPredicateTrueThenFilterPrintsLine() throws IOException {
+    public void whenPredicateTrueThenFilterPrintsLine() {
         //given
         predicate = o -> true;
         final PrintStream wrapper = new StringFilterPrintStreamWrapper(original, predicate);
@@ -71,7 +69,7 @@ public class StringFilterPrintStreamWrapperTest {
     }
 
     @Test
-    public void whenPredicateTrueThenFilterPrintsString() throws IOException {
+    public void whenPredicateTrueThenFilterPrintsString() {
         //given
         predicate = o -> true;
         final PrintStream wrapper = new StringFilterPrintStreamWrapper(original, predicate);

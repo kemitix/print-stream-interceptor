@@ -22,7 +22,6 @@
 package net.kemitix.wrapper.printstream;
 
 import lombok.NonNull;
-import net.kemitix.wrapper.Wrapper;
 
 import java.io.PrintStream;
 
@@ -53,7 +52,10 @@ public class CopyPrintStreamWrapper extends PassthroughPrintStreamWrapper {
      * @param wrapper the wrapper to wrap
      * @param copyTo  the PrintStream to copy to
      */
-    public CopyPrintStreamWrapper(final Wrapper<PrintStream> wrapper, @NonNull final PrintStream copyTo) {
+    public CopyPrintStreamWrapper(
+            final PrintStreamWrapper wrapper,
+            @NonNull final PrintStream copyTo
+                                 ) {
         super(wrapper);
         this.copyTo = copyTo;
     }

@@ -1,6 +1,5 @@
 package net.kemitix.wrapper.printstream;
 
-import net.kemitix.wrapper.Wrapper;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -23,7 +22,7 @@ public class RedirectPrintStreamWrapperTest {
 
     private PrintStream original;
 
-    private Wrapper<PrintStream> existing;
+    private PrintStreamWrapper existing;
 
     private PrintStream redirectTo;
 
@@ -84,7 +83,7 @@ public class RedirectPrintStreamWrapperTest {
         //then
         assertThatNullPointerException().isThrownBy(() -> {
             //when
-            new RedirectPrintStreamWrapper(existing, redirectTo).asCore();
+            new RedirectPrintStreamWrapper(existing, redirectTo).wrapperSubject();
         })
                                         //and
                                         .withMessage("redirectTo");
@@ -93,7 +92,7 @@ public class RedirectPrintStreamWrapperTest {
     @Test
     public void whenWriteByteThenDoNotWriteToOriginal() {
         //given
-        final PrintStream printStream = new RedirectPrintStreamWrapper(original, redirectTo).asCore();
+        final PrintStream printStream = new RedirectPrintStreamWrapper(original, redirectTo).wrapperSubject();
         //when
         printStream.write('x');
         //then
@@ -103,7 +102,7 @@ public class RedirectPrintStreamWrapperTest {
     @Test
     public void whenWriteByteThenWriteToRedirectTo() {
         //given
-        final PrintStream printStream = new RedirectPrintStreamWrapper(original, redirectTo).asCore();
+        final PrintStream printStream = new RedirectPrintStreamWrapper(original, redirectTo).wrapperSubject();
         //when
         printStream.write('x');
         //then
@@ -113,7 +112,7 @@ public class RedirectPrintStreamWrapperTest {
     @Test
     public void whenWriteByteArrayThenDoNotWriteToOriginal() throws IOException {
         //given
-        final PrintStream printStream = new RedirectPrintStreamWrapper(original, redirectTo).asCore();
+        final PrintStream printStream = new RedirectPrintStreamWrapper(original, redirectTo).wrapperSubject();
         //when
         printStream.write("test".getBytes());
         //then
@@ -123,7 +122,7 @@ public class RedirectPrintStreamWrapperTest {
     @Test
     public void whenWriteByteArrayThenWriteToRedirectTo() throws IOException {
         //given
-        final PrintStream printStream = new RedirectPrintStreamWrapper(original, redirectTo).asCore();
+        final PrintStream printStream = new RedirectPrintStreamWrapper(original, redirectTo).wrapperSubject();
         //when
         printStream.write("test".getBytes());
         //then
@@ -133,7 +132,7 @@ public class RedirectPrintStreamWrapperTest {
     @Test
     public void whenExistingInterceptorAndWriteByteThenWriteToRedirectTo() {
         //given
-        final PrintStream printStream = new RedirectPrintStreamWrapper(existing, redirectTo).asCore();
+        final PrintStream printStream = new RedirectPrintStreamWrapper(existing, redirectTo).wrapperSubject();
         //when
         printStream.write('x');
         //then

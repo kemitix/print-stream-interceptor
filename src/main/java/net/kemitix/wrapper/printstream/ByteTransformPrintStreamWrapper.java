@@ -22,7 +22,6 @@
 package net.kemitix.wrapper.printstream;
 
 import lombok.NonNull;
-import net.kemitix.wrapper.Wrapper;
 
 import java.io.PrintStream;
 import java.util.function.Function;
@@ -59,7 +58,8 @@ public class ByteTransformPrintStreamWrapper extends PassthroughPrintStreamWrapp
      * @param transformer the function to transform the byte
      */
     public ByteTransformPrintStreamWrapper(
-            final Wrapper<PrintStream> wrapper, @NonNull final Function<Byte, Byte> transformer
+            final PrintStreamWrapper wrapper,
+            @NonNull final Function<Byte, Byte> transformer
                                           ) {
         super(wrapper);
         this.transformer = transformer;
@@ -67,7 +67,7 @@ public class ByteTransformPrintStreamWrapper extends PassthroughPrintStreamWrapp
 
     @Override
     public final void write(final int b) {
-        getWrapperDelegate().write(transformer.apply((byte) b));
+        getPrintStreamDelegate().write(transformer.apply((byte) b));
     }
 
     @Override

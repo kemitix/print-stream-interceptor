@@ -19,8 +19,6 @@
 
 package net.kemitix.wrapper.printstream;
 
-import net.kemitix.wrapper.Wrapper;
-import net.kemitix.wrapper.WrapperState;
 import org.assertj.core.api.ThrowableAssert;
 import org.junit.Before;
 import org.junit.Test;
@@ -50,16 +48,6 @@ public class PassthroughPrintStreamWrapperTest {
     public void setUp() {
         out = new ByteArrayOutputStream();
         original = new PrintStream(out);
-    }
-
-    @Test
-    public void providesRequiredWrapperState() {
-        //given
-        final Wrapper<PrintStream> wrapper = new PassthroughPrintStreamWrapper(original);
-        //when
-        final WrapperState<PrintStream> state = wrapper.getWrapperState();
-        //then
-        assertThat(state).isNotNull();
     }
 
     @Test
@@ -116,7 +104,7 @@ public class PassthroughPrintStreamWrapperTest {
     public void writeByteToSecondWrapperDelegatesToFirst() {
         //given
         final OutputStream redirectTo = new ByteArrayOutputStream();
-        final Wrapper<PrintStream> first = new RedirectPrintStreamWrapper(original, new PrintStream(redirectTo));
+        final PrintStreamWrapper first = new RedirectPrintStreamWrapper(original, new PrintStream(redirectTo));
         final PassthroughPrintStreamWrapper second = new PassthroughPrintStreamWrapper(first);
         //when
         second.write('x');
@@ -129,7 +117,7 @@ public class PassthroughPrintStreamWrapperTest {
     public void writeStringToSecondWrapperDelegatesToFirst() {
         //given
         final OutputStream redirectTo = new ByteArrayOutputStream();
-        final Wrapper<PrintStream> first = new RedirectPrintStreamWrapper(original, new PrintStream(redirectTo));
+        final PrintStreamWrapper first = new RedirectPrintStreamWrapper(original, new PrintStream(redirectTo));
         final PassthroughPrintStreamWrapper second = new PassthroughPrintStreamWrapper(first);
         //when
         second.print("test");

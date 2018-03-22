@@ -19,7 +19,6 @@
 
 package net.kemitix.wrapper.printstream;
 
-import net.kemitix.wrapper.Wrapper;
 import org.junit.Test;
 
 import java.io.ByteArrayOutputStream;
@@ -56,12 +55,12 @@ public class UsageExampleTest {
         final String message1 = "This is an error message";
         final String message2 = "This is an ordinary message";
         //when
-        final Wrapper<PrintStream> redirectWrapper = new RedirectPrintStreamWrapper(core, redirectTo);
-        final Wrapper<PrintStream> filteredWrapper =
+        final PrintStreamWrapper redirectWrapper = new RedirectPrintStreamWrapper(core, redirectTo);
+        final PrintStreamWrapper filteredWrapper =
                 new StringFilterPrintStreamWrapper(redirectWrapper, o -> o.contains("error"));
-        final Wrapper<PrintStream> copyWrapper = new CopyPrintStreamWrapper(filteredWrapper, copyTo);
-        final Wrapper<PrintStream> passthroughWrapper = new PassthroughPrintStreamWrapper(copyWrapper);
-        final PrintStream printStream = passthroughWrapper.asCore();
+        final PrintStreamWrapper copyWrapper = new CopyPrintStreamWrapper(filteredWrapper, copyTo);
+        final PrintStreamWrapper passthroughWrapper = new PassthroughPrintStreamWrapper(copyWrapper);
+        final PrintStream printStream = passthroughWrapper.wrapperSubject();
         printStream.println(message1);
         printStream.println(message2);
         //then

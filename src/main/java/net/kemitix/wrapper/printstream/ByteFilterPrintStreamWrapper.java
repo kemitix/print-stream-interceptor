@@ -22,7 +22,6 @@
 package net.kemitix.wrapper.printstream;
 
 import lombok.NonNull;
-import net.kemitix.wrapper.Wrapper;
 
 import java.io.PrintStream;
 import java.util.function.Predicate;
@@ -59,7 +58,8 @@ public class ByteFilterPrintStreamWrapper extends PassthroughPrintStreamWrapper 
      * @param predicate the predicate to apply to bytes
      */
     public ByteFilterPrintStreamWrapper(
-            final Wrapper<PrintStream> wrapper, @NonNull final Predicate<Byte> predicate
+            final PrintStreamWrapper wrapper,
+            @NonNull final Predicate<Byte> predicate
                                        ) {
         super(wrapper);
         this.predicate = predicate;

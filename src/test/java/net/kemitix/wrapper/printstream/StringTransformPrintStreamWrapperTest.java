@@ -1,6 +1,5 @@
 package net.kemitix.wrapper.printstream;
 
-import net.kemitix.wrapper.Wrapper;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -25,7 +24,7 @@ public class StringTransformPrintStreamWrapperTest {
 
     private Function<String, String> transformer;
 
-    private Wrapper<PrintStream> existing;
+    private PrintStreamWrapper existing;
 
     @Before
     public void setUp() {
@@ -68,7 +67,7 @@ public class StringTransformPrintStreamWrapperTest {
         final String expected = "message OUT";
         transformer = s -> s.replace("in", "OUT");
         //when
-        final PrintStream printStream = new StringTransformPrintStreamWrapper(original, transformer).asCore();
+        final PrintStream printStream = new StringTransformPrintStreamWrapper(original, transformer).wrapperSubject();
         printStream.print(in);
         //then
         assertThat(out.toString()).isEqualTo(expected);
@@ -81,7 +80,7 @@ public class StringTransformPrintStreamWrapperTest {
         final String expected = "message OUT\n";
         final Function<String, String> transform = s -> s.replace("in", "OUT");
         //when
-        final PrintStream printStream = new StringTransformPrintStreamWrapper(existing, transform).asCore();
+        final PrintStream printStream = new StringTransformPrintStreamWrapper(existing, transform).wrapperSubject();
         printStream.println(in);
         //then
         assertThat(out.toString()).isEqualTo(expected);

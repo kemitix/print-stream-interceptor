@@ -1,6 +1,5 @@
 package net.kemitix.wrapper.printstream;
 
-import net.kemitix.wrapper.Wrapper;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -25,7 +24,7 @@ public class ByteTransformPrintStreamWrapperTest {
 
     private Function<Byte, Byte> transformer;
 
-    private Wrapper<PrintStream> existing;
+    private PrintStreamWrapper existing;
 
     @Before
     public void setUp() {

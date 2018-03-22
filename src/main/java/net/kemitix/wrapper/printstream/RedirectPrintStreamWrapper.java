@@ -22,7 +22,6 @@
 package net.kemitix.wrapper.printstream;
 
 import lombok.NonNull;
-import net.kemitix.wrapper.Wrapper;
 
 import java.io.PrintStream;
 
@@ -53,7 +52,10 @@ public class RedirectPrintStreamWrapper extends PassthroughPrintStreamWrapper {
      * @param wrapper    the wrapper to wrap
      * @param redirectTo the PrintStream to redirect writes to
      */
-    public RedirectPrintStreamWrapper(final Wrapper<PrintStream> wrapper, @NonNull final PrintStream redirectTo) {
+    public RedirectPrintStreamWrapper(
+            final PrintStreamWrapper wrapper,
+            @NonNull final PrintStream redirectTo
+                                     ) {
         super(wrapper);
         this.redirectTo = redirectTo;
     }

@@ -22,12 +22,11 @@
 package net.kemitix.wrapper.printstream;
 
 import lombok.NonNull;
-import lombok.val;
 import net.kemitix.wrapper.Wrapper;
-import net.kemitix.wrapper.WrapperState;
 
 import java.io.PrintStream;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 /**
@@ -36,9 +35,9 @@ import java.util.function.Consumer;
  *
  * @author Paul Campbell (pcampbell@kemitix.net)
  */
-public class PassthroughPrintStreamWrapper extends PrintStream implements Wrapper<PrintStream> {
+public class PassthroughPrintStreamWrapper extends PrintStream implements PrintStreamWrapper {
 
-    private final WrapperState<PrintStream> wrapperState;
+    private final PrintStreamWrapper wrapper;
 
     /**
      * Constructor to wrap a PrintStream.
@@ -47,7 +46,7 @@ public class PassthroughPrintStreamWrapper extends PrintStream implements Wrappe
      */
     public PassthroughPrintStreamWrapper(final PrintStream original) {
         super(original);
-        this.wrapperState = new WrapperState<>(original);
+        wrapper = PrintStreamWrapper.wrap(original);
     }
 
     /**
@@ -55,10 +54,15 @@ public class PassthroughPrintStreamWrapper extends PrintStream implements Wrappe
      *
      * @param object the wrapper to wrap
      */
-    public PassthroughPrintStreamWrapper(final Wrapper<PrintStream> object) {
+    public PassthroughPrintStreamWrapper(final PrintStreamWrapper object) {
         super(Objects.requireNonNull(object, "wrapper")
-                     .getWrapperCore());
-        this.wrapperState = new WrapperState<>(object);
+                      .wrapperSubject());
+        wrapper = PrintStreamWrapper.wrap(object);
+    }
+
+    @Override
+    public Optional<PrintStreamWrapper> getInnerPrintStream() {
+        return Optional.of(wrapper);
     }
 
     /**
@@ -79,8 +83,14 @@ public class PassthroughPrintStreamWrapper extends PrintStream implements Wrappe
      */
     @Override
     public void write(final int b) {
-        val delegate = getWrapperDelegate();
-        delegate.write(b);
+        final Optional<PrintStreamWrapper> inner = wrapper.getInnerPrintStream();
+        if (inner.isPresent()) {
+            final PrintStreamWrapper printStreamWrapper = inner.get();
+            printStreamWrapper.write(b);
+        } else {
+            wrapper.wrapperSubject()
+                    .write(b);
+        }
     }
 
     /**
@@ -99,14 +109,19 @@ public class PassthroughPrintStreamWrapper extends PrintStream implements Wrappe
      * @param len Number of bytes to write
      */
     @Override
-    public void write(@NonNull final byte[] buf, final int off, final int len) {
-        val delegate = getWrapperDelegate();
-        delegate.write(buf, off, len);
-    }
-
-    @Override
-    public final WrapperState<PrintStream> getWrapperState() {
-        return wrapperState;
+    public void write(
+            @NonNull final byte[] buf,
+            final int off,
+            final int len
+                     ) {
+        final Optional<PrintStreamWrapper> inner = wrapper.getInnerPrintStream();
+        if (inner.isPresent()) {
+            inner.get()
+                    .write(buf, off, len);
+        } else {
+            wrapper.wrapperSubject()
+                    .write(buf, off, len);
+        }
     }
 
     /**
@@ -118,7 +133,10 @@ public class PassthroughPrintStreamWrapper extends PrintStream implements Wrappe
      * @param byteConsumer the consumer to process each byte
      */
     protected final void forEachByteInBuffer(
-            final byte[] buf, final int off, final int len, final Consumer<Byte> byteConsumer
+            final byte[] buf,
+            final int off,
+            final int len,
+            final Consumer<Byte> byteConsumer
                                             ) {
         if (len < 0) {
             throw new IndexOutOfBoundsException(
@@ -127,5 +145,15 @@ public class PassthroughPrintStreamWrapper extends PrintStream implements Wrappe
         for (int i = 0; i < len; i++) {
             byteConsumer.accept(buf[off + i]);
         }
+    }
+
+    @Override
+    public PrintStream wrapperSubject() {
+        return wrapper.wrapperSubject();
+    }
+
+    @Override
+    public Optional<Wrapper<PrintStream>> wrapperInner() {
+        return Optional.of(wrapper);
     }
 }
