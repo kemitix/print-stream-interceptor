@@ -65,6 +65,6 @@ public class StringTransformPrintStreamWrapper extends PassthroughPrintStreamWra
 
     @Override
     public final void print(final String s) {
-        getPrintStreamDelegate().print(transformer.apply(s));
+        printStreamDelegate().print(transformer.apply(s));
     }
 }

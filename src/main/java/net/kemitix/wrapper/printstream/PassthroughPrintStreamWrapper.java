@@ -83,14 +83,8 @@ public class PassthroughPrintStreamWrapper extends PrintStream implements PrintS
      */
     @Override
     public void write(final int b) {
-        final Optional<PrintStreamWrapper> inner = wrapper.getInnerPrintStream();
-        if (inner.isPresent()) {
-            final PrintStreamWrapper printStreamWrapper = inner.get();
-            printStreamWrapper.write(b);
-        } else {
-            wrapper.wrapperSubject()
-                    .write(b);
-        }
+        wrapper.printStreamDelegate()
+                .write(b);
     }
 
     /**
@@ -114,14 +108,8 @@ public class PassthroughPrintStreamWrapper extends PrintStream implements PrintS
             final int off,
             final int len
                      ) {
-        final Optional<PrintStreamWrapper> inner = wrapper.getInnerPrintStream();
-        if (inner.isPresent()) {
-            inner.get()
-                    .write(buf, off, len);
-        } else {
-            wrapper.wrapperSubject()
-                    .write(buf, off, len);
-        }
+        wrapper.printStreamDelegate()
+                .write(buf, off, len);
     }
 
     /**

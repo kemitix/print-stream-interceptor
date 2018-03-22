@@ -67,7 +67,7 @@ public class ByteTransformPrintStreamWrapper extends PassthroughPrintStreamWrapp
 
     @Override
     public final void write(final int b) {
-        getPrintStreamDelegate().write(transformer.apply((byte) b));
+        printStreamDelegate().write(transformer.apply((byte) b));
     }
 
     @Override
