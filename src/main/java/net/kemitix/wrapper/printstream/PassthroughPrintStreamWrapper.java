@@ -83,8 +83,7 @@ public class PassthroughPrintStreamWrapper extends PrintStream implements PrintS
      */
     @Override
     public void write(final int b) {
-        wrapper.printStreamDelegate()
-                .write(b);
+        wrapper.write(b);
     }
 
     /**
@@ -108,8 +107,7 @@ public class PassthroughPrintStreamWrapper extends PrintStream implements PrintS
             final int off,
             final int len
                      ) {
-        wrapper.printStreamDelegate()
-                .write(buf, off, len);
+        wrapper.write(buf, off, len);
     }
 
     /**
