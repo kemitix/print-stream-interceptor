@@ -19,6 +19,7 @@
 
 package net.kemitix.wrapper.printstream;
 
+import net.kemitix.wrapper.Wrapper;
 import org.assertj.core.api.ThrowableAssert;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,6 +28,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.assertj.core.api.Assertions.*;
@@ -222,5 +224,22 @@ public class PassthroughPrintStreamWrapperTest {
         wrapper.forEachByteInBuffer(buf, off, len, o -> aBoolean.set(true));
         //then
         assertThat(aBoolean).isTrue();
+    }
+
+    @Test
+    public void canGetInnerWrapper() {
+        //given
+        final PrintStream printStream = new PrintStream(new ByteArrayOutputStream());
+        final PassthroughPrintStreamWrapper wrapper =
+                new PassthroughPrintStreamWrapper(printStream);
+        //when
+        final Optional<Wrapper<PrintStream>> result = wrapper.wrapperInner();
+        //then
+        assertThat(result).isNotEmpty();
+        result.ifPresent(printStreamWrapper -> {
+            assertThat(printStreamWrapper.wrapperInner()).isEmpty();
+            assertThat(printStreamWrapper.wrapperSubject()).isSameAs(printStream);
+                }
+        );
     }
 }
