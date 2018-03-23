@@ -61,15 +61,28 @@ public class PassthroughPrintStreamWrapper extends PrintStream implements PrintS
     }
 
     @Override
-    public Optional<PrintStreamWrapper> printStreamWrapperInner() {
+    public final Optional<PrintStreamWrapper> printStreamWrapperInner() {
         return Optional.of(wrapper);
     }
 
+    /**
+     * Write the byte to the wrapped PrintStream or PrintStreamWrapper.
+     *
+     * @param b The byte to be written
+     *
+     */
     @Override
     public void write(final int b) {
         wrapper.write(b);
     }
 
+    /**
+     * Write the contents of the byte array to the wrapped PrintStream of PrintStreamWrapper.
+     *
+     * @param buf A byte array
+     * @param off Offset from which to start taking bytes
+     * @param len Number of bytes to write
+     */
     @Override
     public void write(
             @NonNull final byte[] buf,
@@ -103,12 +116,12 @@ public class PassthroughPrintStreamWrapper extends PrintStream implements PrintS
     }
 
     @Override
-    public PrintStream wrapperSubject() {
+    public final PrintStream wrapperSubject() {
         return wrapper.wrapperSubject();
     }
 
     @Override
-    public Optional<Wrapper<PrintStream>> wrapperInner() {
+    public final Optional<Wrapper<PrintStream>> wrapperInner() {
         return Optional.of(wrapper);
     }
 }
