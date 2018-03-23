@@ -92,7 +92,7 @@ public class RedirectPrintStreamWrapperTest {
     @Test
     public void whenWriteByteThenDoNotWriteToOriginal() {
         //given
-        final PrintStream printStream = new RedirectPrintStreamWrapper(original, redirectTo).wrapperSubject();
+        final PrintStream printStream = new RedirectPrintStreamWrapper(original, redirectTo);
         //when
         printStream.write('x');
         //then
@@ -102,7 +102,7 @@ public class RedirectPrintStreamWrapperTest {
     @Test
     public void whenWriteByteThenWriteToRedirectTo() {
         //given
-        final PrintStream printStream = new RedirectPrintStreamWrapper(original, redirectTo).wrapperSubject();
+        final PrintStream printStream = new RedirectPrintStreamWrapper(original, redirectTo);
         //when
         printStream.write('x');
         //then
@@ -112,7 +112,7 @@ public class RedirectPrintStreamWrapperTest {
     @Test
     public void whenWriteByteArrayThenDoNotWriteToOriginal() throws IOException {
         //given
-        final PrintStream printStream = new RedirectPrintStreamWrapper(original, redirectTo).wrapperSubject();
+        final PrintStream printStream = new RedirectPrintStreamWrapper(original, redirectTo);
         //when
         printStream.write("test".getBytes());
         //then
@@ -122,7 +122,7 @@ public class RedirectPrintStreamWrapperTest {
     @Test
     public void whenWriteByteArrayThenWriteToRedirectTo() throws IOException {
         //given
-        final PrintStream printStream = new RedirectPrintStreamWrapper(original, redirectTo).wrapperSubject();
+        final PrintStream printStream = new RedirectPrintStreamWrapper(original, redirectTo);
         //when
         printStream.write("test".getBytes());
         //then
@@ -132,7 +132,7 @@ public class RedirectPrintStreamWrapperTest {
     @Test
     public void whenExistingInterceptorAndWriteByteThenWriteToRedirectTo() {
         //given
-        final PrintStream printStream = new RedirectPrintStreamWrapper(existing, redirectTo).wrapperSubject();
+        final PrintStream printStream = new RedirectPrintStreamWrapper(existing, redirectTo);
         //when
         printStream.write('x');
         //then

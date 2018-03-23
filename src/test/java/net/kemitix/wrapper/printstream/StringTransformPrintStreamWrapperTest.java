@@ -67,7 +67,7 @@ public class StringTransformPrintStreamWrapperTest {
         final String expected = "message OUT";
         transformer = s -> s.replace("in", "OUT");
         //when
-        final PrintStream printStream = new StringTransformPrintStreamWrapper(original, transformer).wrapperSubject();
+        final PrintStream printStream = new StringTransformPrintStreamWrapper(original, transformer);
         printStream.print(in);
         //then
         assertThat(out.toString()).isEqualTo(expected);
@@ -80,7 +80,7 @@ public class StringTransformPrintStreamWrapperTest {
         final String expected = "message OUT\n";
         final Function<String, String> transform = s -> s.replace("in", "OUT");
         //when
-        final PrintStream printStream = new StringTransformPrintStreamWrapper(existing, transform).wrapperSubject();
+        final PrintStream printStream = new StringTransformPrintStreamWrapper(existing, transform);
         printStream.println(in);
         //then
         assertThat(out.toString()).isEqualTo(expected);

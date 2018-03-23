@@ -93,7 +93,7 @@ public class CopyPrintStreamWrapperTest {
     }
 
     private PrintStream interceptOriginal() {
-        return new CopyPrintStreamWrapper(original, copyTo).wrapperSubject();
+        return new CopyPrintStreamWrapper(original, copyTo);
     }
 
     @Test
@@ -137,6 +137,6 @@ public class CopyPrintStreamWrapperTest {
     }
 
     private PrintStream interceptExisting() {
-        return new CopyPrintStreamWrapper(existing, copyTo).wrapperSubject();
+        return new CopyPrintStreamWrapper(existing, copyTo);
     }
 }
