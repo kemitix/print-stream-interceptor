@@ -61,46 +61,15 @@ public class PassthroughPrintStreamWrapper extends PrintStream implements PrintS
     }
 
     @Override
-    public Optional<PrintStreamWrapper> getInnerPrintStream() {
+    public Optional<PrintStreamWrapper> printStreamWrapperInner() {
         return Optional.of(wrapper);
     }
 
-    /**
-     * Writes the specified byte to this stream.
-     *
-     * <p>If the byte is a newline and automatic flushing is enabled then the flush method will be invoked.</p>
-     *
-     * <p>Note that the byte is written as given; to write a character that will be translated according to the
-     * platform's default character encoding, use the print(char) or println(char) methods.</p>
-     *
-     * <p>This implementation passes the byte, unmodified, to the intercepted {@link PrintStream} or {@code
-     * Wrapper<PrintStream>}.</p>
-     *
-     * @param b The byte to be written
-     *
-     * @see #print(char)
-     * @see #println(char)
-     */
     @Override
     public void write(final int b) {
         wrapper.write(b);
     }
 
-    /**
-     * Writes len bytes from the specified byte array starting at offset off to this stream.
-     *
-     * <p>If automatic flushing is enabled then the flush method will be invoked.</p>
-     *
-     * <p>Note that the bytes will be written as given; to write characters that will be translated according to the
-     * platform's default character encoding, use the print(char) or println(char) methods.</p>
-     *
-     * <p>This implementation passes the bytes, unmodified, to the intercepted {@link PrintStream} or {@code
-     * Wrapper<PrintStream>}.</p>
-     *
-     * @param buf A byte array
-     * @param off Offset from which to start taking bytes
-     * @param len Number of bytes to write
-     */
     @Override
     public void write(
             @NonNull final byte[] buf,

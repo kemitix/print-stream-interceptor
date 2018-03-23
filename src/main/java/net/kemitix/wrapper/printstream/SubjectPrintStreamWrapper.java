@@ -21,21 +21,24 @@
 
 package net.kemitix.wrapper.printstream;
 
+import lombok.RequiredArgsConstructor;
 import net.kemitix.wrapper.Wrapper;
 
 import java.io.PrintStream;
 import java.util.Optional;
 
+/**
+ * A PrintStreamWrapper that contains the PrintStream directly.
+ *
+ * @author Paul Campbell (pcampbell@kemitix.net)
+ */
+@RequiredArgsConstructor
 class SubjectPrintStreamWrapper implements PrintStreamWrapper {
 
     private final PrintStream subject;
 
-    SubjectPrintStreamWrapper(final PrintStream subject) {
-        this.subject = subject;
-    }
-
     @Override
-    public Optional<PrintStreamWrapper> getInnerPrintStream() {
+    public Optional<PrintStreamWrapper> printStreamWrapperInner() {
         return Optional.empty();
     }
 
@@ -49,7 +52,7 @@ class SubjectPrintStreamWrapper implements PrintStreamWrapper {
             final byte[] buf,
             final int off,
             final int len
-                     ) {
+    ) {
         subject.write(buf, off, len);
     }
 

@@ -26,29 +26,92 @@ import net.kemitix.wrapper.Wrapper;
 import java.io.PrintStream;
 import java.util.Optional;
 
+/**
+ * {@link Wrapper} for handling {@link PrintStream}.
+ *
+ * <p>Provides access to the {@link PrintStream#write(int)} and {@link PrintStream#write(byte[], int, int)} through
+ * the {@link Wrapper}.</p>
+ *
+ * @author Paul Campbell (pcampbell@kemitix.net)
+ */
 public interface PrintStreamWrapper extends Wrapper<PrintStream> {
 
+    /**
+     * Wrap the {@link PrintStream}.
+     *
+     * @param subject the PrintStream to wrap
+     *
+     * @return a PrintStreamWrapper containing the subject
+     */
     static PrintStreamWrapper wrap(final PrintStream subject) {
         return new SubjectPrintStreamWrapper(subject);
     }
 
+    /**
+     * Wrap a {@link PrintStreamWrapper}.
+     *
+     * @param wrapper the PrintStreamWrapper to wrap
+     *
+     * @return a PrintStreamWrapper containing the PrintStreamWrapper
+     */
     static PrintStreamWrapper wrap(final PrintStreamWrapper wrapper) {
         return new NestedPrintStreamWrapper(wrapper);
     }
 
+    /**
+     * The content of the PrintStreamWrapper as a PrintStream.
+     *
+     * @return The content of the PrintStreamWrapper as a PrintStream
+     */
     default PrintStream printStreamDelegate() {
-        return getInnerPrintStream()
+        return printStreamWrapperInner()
                 .map(PrintStreamWrapper::printStreamDelegate)
                 .orElseGet(this::wrapperSubject);
     }
 
-    Optional<PrintStreamWrapper> getInnerPrintStream();
+    /**
+     * Finds the contained PrintStreamWrapper if present.
+     *
+     * @return an Optional containing the wrapper PrintStreamWrapper, or empty if there is no inner wrapper.
+     */
+    Optional<PrintStreamWrapper> printStreamWrapperInner();
 
+    /**
+     * Writes the specified byte to this stream.
+     *
+     * <p>If the byte is a newline and automatic flushing is enabled then the flush method will be invoked.</p>
+     *
+     * <p>Note that the byte is written as given; to write a character that will be translated according to the
+     * platform's default character encoding, use the print(char) or println(char) methods.</p>
+     *
+     * <p>This implementation passes the byte, unmodified, to the intercepted {@link PrintStream} or {@code
+     * Wrapper<PrintStream>}.</p>
+     *
+     * @param b The byte to be written
+     *
+     * @see PrintStream#print(char)
+     * @see PrintStream#println(char)
+     */
     void write(int b);
 
+    /**
+     * Writes len bytes from the specified byte array starting at offset off to this stream.
+     *
+     * <p>If automatic flushing is enabled then the flush method will be invoked.</p>
+     *
+     * <p>Note that the bytes will be written as given; to write characters that will be translated according to the
+     * platform's default character encoding, use the print(char) or println(char) methods.</p>
+     *
+     * <p>This implementation passes the bytes, unmodified, to the intercepted {@link PrintStream} or {@code
+     * Wrapper<PrintStream>}.</p>
+     *
+     * @param buf A byte array
+     * @param off Offset from which to start taking bytes
+     * @param len Number of bytes to write
+     */
     void write(
             byte[] buf,
             int off,
             int len
-              );
+    );
 }

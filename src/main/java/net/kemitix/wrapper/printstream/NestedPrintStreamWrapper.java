@@ -21,21 +21,24 @@
 
 package net.kemitix.wrapper.printstream;
 
+import lombok.RequiredArgsConstructor;
 import net.kemitix.wrapper.Wrapper;
 
 import java.io.PrintStream;
 import java.util.Optional;
 
+/**
+ * A PrintStreamWrapper that contains another PrintStreamWrapper.
+ *
+ * @author Paul Campbell (pcampbell@kemitix.net)
+ */
+@RequiredArgsConstructor
 class NestedPrintStreamWrapper implements PrintStreamWrapper {
 
     private final PrintStreamWrapper wrapper;
 
-    NestedPrintStreamWrapper(final PrintStreamWrapper wrapper) {
-        this.wrapper = wrapper;
-    }
-
     @Override
-    public Optional<PrintStreamWrapper> getInnerPrintStream() {
+    public Optional<PrintStreamWrapper> printStreamWrapperInner() {
         return Optional.of(wrapper);
     }
 
@@ -49,7 +52,7 @@ class NestedPrintStreamWrapper implements PrintStreamWrapper {
             final byte[] buf,
             final int off,
             final int len
-                     ) {
+    ) {
         wrapper.write(buf, off, len);
     }
 
