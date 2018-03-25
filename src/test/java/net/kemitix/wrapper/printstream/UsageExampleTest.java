@@ -50,9 +50,9 @@ public class UsageExampleTest {
         final OutputStream redirectArray = new ByteArrayOutputStream();
         final OutputStream copyArray = new ByteArrayOutputStream();
         final PrintStream printStream = PrintStreamWrapper.passthrough(
-                (PrintStreamWrapper) new CopyPrintStreamWrapper(
-                        (PrintStreamWrapper) new StringFilterPrintStreamWrapper(
-                                (PrintStreamWrapper) PrintStreamWrapper.redirect(
+                PrintStreamWrapper.copy(
+                        new StringFilterPrintStreamWrapper(
+                                PrintStreamWrapper.redirect(
                                         new PrintStream(coreArray),
                                         new PrintStream(redirectArray)),
                                 o -> o.contains("error")),

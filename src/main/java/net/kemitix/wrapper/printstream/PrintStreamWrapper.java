@@ -118,6 +118,23 @@ public interface PrintStreamWrapper extends Wrapper<PrintStream> {
     }
 
     /**
+     * Creates a PrintStream that copies {@link PrintStream#write(int)} and
+     * {@link PrintStream#write(byte[], int, int)} calls to both the left and the
+     * right PrintStreams.
+     *
+     * @param left the first PrintStream
+     * @param right the second PrintStream
+     *
+     * @return a PrintStream
+     */
+    static PrintStream copy(
+            final PrintStream left,
+            final PrintStream right
+                           ) {
+        return new CopyPrintStreamWrapper(left, right);
+    }
+
+    /**
      * The content of the PrintStreamWrapper as a PrintStream.
      *
      * @return The content of the PrintStreamWrapper as a PrintStream

@@ -22,34 +22,32 @@ public class CopyPrintStreamWrapperTest {
 
     private final OutputStream copy = new ByteArrayOutputStream();
 
-    private PrintStream original = new PrintStream(out);
+    private final PrintStream original = new PrintStream(out);
+
+    private final PrintStream existing = PrintStreamWrapper.passthrough(original);
 
     private PrintStream copyTo = new PrintStream(copy);
-
-    private PrintStream existing = PrintStreamWrapper.passthrough(original);
 
     @Test
     public void requiresOriginalPrintStream() {
         //given
-        original = null;
-        //when
         final ThrowableAssert.ThrowingCallable code = () ->
-                new CopyPrintStreamWrapper(original, copyTo);
+                PrintStreamWrapper.copy(null, copyTo);
         //then
-        assertThatNullPointerException().isThrownBy(code)
-                                        .withMessage("Null output stream");
+        assertThatNullPointerException()
+                .isThrownBy(code)
+                .withMessage("Null output stream");
     }
 
     @Test
-    public void requiresOriginalPrintStreamInterceptor() {
+    public void requiresCopyToPrintStream() {
         //given
-        existing = null;
-        //when
         final ThrowableAssert.ThrowingCallable code = () ->
-                new CopyPrintStreamWrapper((PrintStreamWrapper) existing, copyTo);
+                PrintStreamWrapper.copy(original, null);
         //then
-        assertThatNullPointerException().isThrownBy(code)
-                                        .withMessage("wrapper");
+        assertThatNullPointerException()
+                .isThrownBy(code)
+                .withMessage("copyTo");
     }
 
     @Test
@@ -58,7 +56,7 @@ public class CopyPrintStreamWrapperTest {
         copyTo = null;
         //when
         final ThrowableAssert.ThrowingCallable code = () ->
-                new CopyPrintStreamWrapper(original, copyTo);
+                PrintStreamWrapper.copy(original, copyTo);
         //then
         assertThatNullPointerException().isThrownBy(code)
                                         .withMessage("copyTo");
@@ -70,7 +68,7 @@ public class CopyPrintStreamWrapperTest {
         copyTo = null;
         //when
         final ThrowableAssert.ThrowingCallable code = () ->
-                new CopyPrintStreamWrapper(existing, copyTo);
+                PrintStreamWrapper.copy(existing, copyTo);
         //then
         assertThatNullPointerException().isThrownBy(code)
                                         .withMessage("copyTo");
@@ -79,7 +77,7 @@ public class CopyPrintStreamWrapperTest {
     @Test
     public void whenWriteByteThenWriteToOriginal() {
         //given
-        final PrintStream interceptor = new CopyPrintStreamWrapper(original, copyTo);
+        final PrintStream interceptor = PrintStreamWrapper.copy(original, copyTo);
         //when
         interceptor.write('x');
         //then
@@ -89,7 +87,7 @@ public class CopyPrintStreamWrapperTest {
     @Test
     public void whenWriteByteThenWriteToCopyTo() {
         //given
-        final PrintStream interceptor = new CopyPrintStreamWrapper(original, copyTo);
+        final PrintStream interceptor = PrintStreamWrapper.copy(original, copyTo);
         //when
         interceptor.write('x');
         //then
@@ -99,7 +97,7 @@ public class CopyPrintStreamWrapperTest {
     @Test
     public void whenWriteByteArrayThenWriteToOriginal() throws IOException {
         //given
-        final PrintStream interceptor = new CopyPrintStreamWrapper(original, copyTo);
+        final PrintStream interceptor = PrintStreamWrapper.copy(original, copyTo);
         //when
         interceptor.write("test".getBytes());
         //then
@@ -109,7 +107,7 @@ public class CopyPrintStreamWrapperTest {
     @Test
     public void whenWriteByteArrayThenWriteToCopyTo() throws IOException {
         //given
-        final PrintStream interceptor = new CopyPrintStreamWrapper(original, copyTo);
+        final PrintStream interceptor = PrintStreamWrapper.copy(original, copyTo);
         //when
         interceptor.write("test".getBytes());
         //then
@@ -119,7 +117,7 @@ public class CopyPrintStreamWrapperTest {
     @Test
     public void whenExistingInterceptorAndWriteByteThenWriteToCopyTo() {
         //given
-        final PrintStream interceptor = new CopyPrintStreamWrapper(existing, copyTo);
+        final PrintStream interceptor = PrintStreamWrapper.copy(existing, copyTo);
         //when
         interceptor.write('x');
         //then
