@@ -1,6 +1,5 @@
 package net.kemitix.wrapper.printstream;
 
-import net.kemitix.wrapper.Wrapper;
 import org.assertj.core.api.ThrowableAssert;
 import org.junit.Before;
 import org.junit.Test;
@@ -28,7 +27,7 @@ public class CopyPrintStreamWrapperTest {
 
     private PrintStream copyTo;
 
-    private Wrapper<PrintStream> existing;
+    private PrintStreamWrapper existing;
 
     @Before
     public void setUp() {
@@ -93,6 +92,10 @@ public class CopyPrintStreamWrapperTest {
         assertThat(out.toString()).isEqualTo("x");
     }
 
+    private PrintStream interceptOriginal() {
+        return new CopyPrintStreamWrapper(original, copyTo);
+    }
+
     @Test
     public void whenWriteByteThenWriteToCopyTo() {
         //given
@@ -133,11 +136,7 @@ public class CopyPrintStreamWrapperTest {
         assertThat(copy.toString()).isEqualTo("x");
     }
 
-    private PrintStream interceptOriginal() {
-        return new CopyPrintStreamWrapper(original, copyTo).asCore();
-    }
-
     private PrintStream interceptExisting() {
-        return new CopyPrintStreamWrapper(existing, copyTo).asCore();
+        return new CopyPrintStreamWrapper(existing, copyTo);
     }
 }

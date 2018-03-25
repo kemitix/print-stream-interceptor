@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Paul Campbell
+ * Copyright (c) 2018 Paul Campbell
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software
  * and associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -22,7 +22,6 @@
 package net.kemitix.wrapper.printstream;
 
 import lombok.NonNull;
-import net.kemitix.wrapper.Wrapper;
 
 import java.io.PrintStream;
 
@@ -53,7 +52,10 @@ public class RedirectPrintStreamWrapper extends PassthroughPrintStreamWrapper {
      * @param wrapper    the wrapper to wrap
      * @param redirectTo the PrintStream to redirect writes to
      */
-    public RedirectPrintStreamWrapper(final Wrapper<PrintStream> wrapper, @NonNull final PrintStream redirectTo) {
+    public RedirectPrintStreamWrapper(
+            final PrintStreamWrapper wrapper,
+            @NonNull final PrintStream redirectTo
+                                     ) {
         super(wrapper);
         this.redirectTo = redirectTo;
     }

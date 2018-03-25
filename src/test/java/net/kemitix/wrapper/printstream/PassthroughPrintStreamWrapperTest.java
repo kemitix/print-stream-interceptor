@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Paul Campbell
+ * Copyright (c) 2018 Paul Campbell
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
  * documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
@@ -20,7 +20,6 @@
 package net.kemitix.wrapper.printstream;
 
 import net.kemitix.wrapper.Wrapper;
-import net.kemitix.wrapper.WrapperState;
 import org.assertj.core.api.ThrowableAssert;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,6 +28,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -50,16 +50,6 @@ public class PassthroughPrintStreamWrapperTest {
     public void setUp() {
         out = new ByteArrayOutputStream();
         original = new PrintStream(out);
-    }
-
-    @Test
-    public void providesRequiredWrapperState() {
-        //given
-        final Wrapper<PrintStream> wrapper = new PassthroughPrintStreamWrapper(original);
-        //when
-        final WrapperState<PrintStream> state = wrapper.getWrapperState();
-        //then
-        assertThat(state).isNotNull();
     }
 
     @Test
@@ -116,7 +106,7 @@ public class PassthroughPrintStreamWrapperTest {
     public void writeByteToSecondWrapperDelegatesToFirst() {
         //given
         final OutputStream redirectTo = new ByteArrayOutputStream();
-        final Wrapper<PrintStream> first = new RedirectPrintStreamWrapper(original, new PrintStream(redirectTo));
+        final PrintStreamWrapper first = new RedirectPrintStreamWrapper(original, new PrintStream(redirectTo));
         final PassthroughPrintStreamWrapper second = new PassthroughPrintStreamWrapper(first);
         //when
         second.write('x');
@@ -129,7 +119,7 @@ public class PassthroughPrintStreamWrapperTest {
     public void writeStringToSecondWrapperDelegatesToFirst() {
         //given
         final OutputStream redirectTo = new ByteArrayOutputStream();
-        final Wrapper<PrintStream> first = new RedirectPrintStreamWrapper(original, new PrintStream(redirectTo));
+        final PrintStreamWrapper first = new RedirectPrintStreamWrapper(original, new PrintStream(redirectTo));
         final PassthroughPrintStreamWrapper second = new PassthroughPrintStreamWrapper(first);
         //when
         second.print("test");
@@ -236,5 +226,22 @@ public class PassthroughPrintStreamWrapperTest {
         wrapper.forEachByteInBuffer(buf, off, len, o -> aBoolean.set(true));
         //then
         assertThat(aBoolean).isTrue();
+    }
+
+    @Test
+    public void canGetInnerWrapper() {
+        //given
+        final PrintStream printStream = new PrintStream(new ByteArrayOutputStream());
+        final PassthroughPrintStreamWrapper wrapper =
+                new PassthroughPrintStreamWrapper(printStream);
+        //when
+        final Optional<Wrapper<PrintStream>> result = wrapper.getInnerWrapper();
+        //then
+        assertThat(result).isNotEmpty();
+        result.ifPresent(printStreamWrapper -> {
+            assertThat(printStreamWrapper.getInnerWrapper()).isEmpty();
+            assertThat(printStreamWrapper.getWrapperSubject()).isSameAs(printStream);
+                }
+        );
     }
 }

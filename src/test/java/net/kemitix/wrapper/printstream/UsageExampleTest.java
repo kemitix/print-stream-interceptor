@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Paul Campbell
+ * Copyright (c) 2018 Paul Campbell
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
  * documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
@@ -19,7 +19,6 @@
 
 package net.kemitix.wrapper.printstream;
 
-import net.kemitix.wrapper.Wrapper;
 import org.junit.Test;
 
 import java.io.ByteArrayOutputStream;
@@ -48,20 +47,19 @@ public class UsageExampleTest {
     public void usage() {
         //given
         final OutputStream coreArray = new ByteArrayOutputStream();
-        final PrintStream core = new PrintStream(coreArray);
         final OutputStream redirectArray = new ByteArrayOutputStream();
-        final PrintStream redirectTo = new PrintStream(redirectArray);
         final OutputStream copyArray = new ByteArrayOutputStream();
-        final PrintStream copyTo = new PrintStream(copyArray);
+        final PrintStream printStream = new PassthroughPrintStreamWrapper(
+                (PrintStreamWrapper) new CopyPrintStreamWrapper(
+                        (PrintStreamWrapper) new StringFilterPrintStreamWrapper(
+                                (PrintStreamWrapper) new RedirectPrintStreamWrapper(
+                                        new PrintStream(coreArray),
+                                        new PrintStream(redirectArray)),
+                                o -> o.contains("error")),
+                        new PrintStream(copyArray)));
         final String message1 = "This is an error message";
         final String message2 = "This is an ordinary message";
         //when
-        final Wrapper<PrintStream> redirectWrapper = new RedirectPrintStreamWrapper(core, redirectTo);
-        final Wrapper<PrintStream> filteredWrapper =
-                new StringFilterPrintStreamWrapper(redirectWrapper, o -> o.contains("error"));
-        final Wrapper<PrintStream> copyWrapper = new CopyPrintStreamWrapper(filteredWrapper, copyTo);
-        final Wrapper<PrintStream> passthroughWrapper = new PassthroughPrintStreamWrapper(copyWrapper);
-        final PrintStream printStream = passthroughWrapper.asCore();
         printStream.println(message1);
         printStream.println(message2);
         //then

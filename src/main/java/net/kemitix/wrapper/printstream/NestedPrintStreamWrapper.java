@@ -21,54 +21,48 @@
 
 package net.kemitix.wrapper.printstream;
 
-import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import net.kemitix.wrapper.Wrapper;
 
 import java.io.PrintStream;
+import java.util.Optional;
 
 /**
- * Wrapper for {@link PrintStream} that copies all writes to the supplied PrintStream and to any inner wrapper or, if
- * there isn't one, to the core {@link PrintStream}.
+ * A PrintStreamWrapper that contains another PrintStreamWrapper.
  *
  * @author Paul Campbell (pcampbell@kemitix.net)
  */
-public class CopyPrintStreamWrapper extends PassthroughPrintStreamWrapper {
+@RequiredArgsConstructor
+class NestedPrintStreamWrapper implements PrintStreamWrapper {
 
-    private final PrintStream copyTo;
+    private final PrintStreamWrapper wrapper;
 
-    /**
-     * Constructor to wrap in existing PrintStream.
-     *
-     * @param core   the PrintStream to wrap
-     * @param copyTo the PrintStream to copy to
-     */
-    public CopyPrintStreamWrapper(final PrintStream core, @NonNull final PrintStream copyTo) {
-        super(core);
-        this.copyTo = copyTo;
-    }
-
-    /**
-     * Constructor to wrap an existing {@code Wrapper<PrintStream>}.
-     *
-     * @param wrapper the wrapper to wrap
-     * @param copyTo  the PrintStream to copy to
-     */
-    public CopyPrintStreamWrapper(
-            final PrintStreamWrapper wrapper,
-            @NonNull final PrintStream copyTo
-                                 ) {
-        super(wrapper);
-        this.copyTo = copyTo;
+    @Override
+    public Optional<PrintStreamWrapper> printStreamWrapperInner() {
+        return Optional.of(wrapper);
     }
 
     @Override
-    public final void write(final int b) {
-        super.write(b);
-        copyTo.write(b);
+    public void write(final int b) {
+        wrapper.write(b);
     }
 
     @Override
-    public final void write(final byte[] buf, final int off, final int len) {
-        super.write(buf, off, len);
-        copyTo.write(buf, off, len);
+    public void write(
+            final byte[] buf,
+            final int off,
+            final int len
+    ) {
+        wrapper.write(buf, off, len);
+    }
+
+    @Override
+    public PrintStream getWrapperSubject() {
+        return wrapper.getWrapperSubject();
+    }
+
+    @Override
+    public Optional<Wrapper<PrintStream>> getInnerWrapper() {
+        return Optional.of(wrapper);
     }
 }
