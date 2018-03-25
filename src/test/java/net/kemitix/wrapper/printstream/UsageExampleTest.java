@@ -52,7 +52,7 @@ public class UsageExampleTest {
         final PrintStream printStream = PrintStreamWrapper.passthrough(
                 (PrintStreamWrapper) new CopyPrintStreamWrapper(
                         (PrintStreamWrapper) new StringFilterPrintStreamWrapper(
-                                (PrintStreamWrapper) new RedirectPrintStreamWrapper(
+                                (PrintStreamWrapper) PrintStreamWrapper.redirect(
                                         new PrintStream(coreArray),
                                         new PrintStream(redirectArray)),
                                 o -> o.contains("error")),

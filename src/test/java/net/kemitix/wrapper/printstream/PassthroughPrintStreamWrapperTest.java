@@ -65,7 +65,7 @@ public class PassthroughPrintStreamWrapperTest {
     }
 
     @Test
-    public void canWriteByteArraySubsectionUnmodified() throws IOException {
+    public void canWriteByteArraySubsectionUnmodified() {
         //given
         final PrintStream wrapper = PrintStreamWrapper.passthrough(original);
         //when
@@ -75,7 +75,7 @@ public class PassthroughPrintStreamWrapperTest {
     }
 
     @Test
-    public void writeNullByteArrayWillThrowNullPointerException() throws IOException {
+    public void writeNullByteArrayWillThrowNullPointerException() {
         //given
         final PrintStream wrapper = PrintStreamWrapper.passthrough(original);
         //then
@@ -98,7 +98,7 @@ public class PassthroughPrintStreamWrapperTest {
     public void writeByteToSecondWrapperDelegatesToFirst() {
         //given
         final OutputStream redirectTo = new ByteArrayOutputStream();
-        final PrintStreamWrapper first = new RedirectPrintStreamWrapper(original, new PrintStream(redirectTo));
+        final PrintStream first = PrintStreamWrapper.redirect(original, new PrintStream(redirectTo));
         final PrintStream second = PrintStreamWrapper.passthrough(first);
         //when
         second.write('x');
@@ -111,7 +111,7 @@ public class PassthroughPrintStreamWrapperTest {
     public void writeStringToSecondWrapperDelegatesToFirst() {
         //given
         final OutputStream redirectTo = new ByteArrayOutputStream();
-        final PrintStreamWrapper first = new RedirectPrintStreamWrapper(original, new PrintStream(redirectTo));
+        final PrintStream first = PrintStreamWrapper.redirect(original, new PrintStream(redirectTo));
         final PrintStream second = PrintStreamWrapper.passthrough(first);
         //when
         second.print("test");

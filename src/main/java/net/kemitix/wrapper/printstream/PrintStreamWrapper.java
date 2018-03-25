@@ -66,6 +66,50 @@ public interface PrintStreamWrapper extends Wrapper<PrintStream> {
         return new PassthroughPrintStreamWrapper(wrapper);
     }
 
+    /**
+     * Creates a {@link PrintStreamWrapper} that sends all {@link PrintStream#write(int)}
+     * and {@link PrintStream#write(byte[], int, int)} calls to the redirectTo PrintStream.
+     *
+     * <p>The original PrintStream will not receive any of the redirected write(...) calls.</p>
+     *
+     * @param original the original PrintStream
+     * @param redirectTo the PrintStream to receive the write(...) calls
+     *
+     * @return a PrintStream
+     *
+     * @deprecated While there is no ability to subsequently remove a redirect from the chain of
+     * nested PrintStreamWrapper, then {@code redirect(o,r)} can simple be replaced by {@code r}.
+     */
+    @Deprecated
+    static PrintStream redirect(
+            final PrintStream original,
+            final PrintStream redirectTo
+                               ) {
+        return new RedirectPrintStreamWrapper(original, redirectTo);
+    }
+
+    /**
+     * Creates a {@link PrintStreamWrapper} that sends all {@link PrintStream#write(int)}
+     * and {@link PrintStream#write(byte[], int, int)} calls to the redirectTo PrintStreamWrapper.
+     *
+     * <p>The original PrintStreamWrapper will not receive any of the redirected write(...) calls.</p>
+     *
+     * @param original the original PrintStreamWrapper
+     * @param redirectTo the PrintStream to receive the write(...) calls
+     *
+     * @return a PrintStream
+     *
+     * @deprecated While there is no ability to subsequently remove a redirect from the chain of
+     * nested PrintStreamWrapper, then {@code redirect(o,r)} can simple be replaced by {@code r}.
+     */
+    @Deprecated
+    static PrintStream redirect(
+            final PrintStreamWrapper original,
+            final PrintStream redirectTo
+                               ) {
+        return new RedirectPrintStreamWrapper(original, redirectTo);
+    }
+
     static Optional<Wrapper<PrintStream>> innerWrapper(final PrintStream printStream) {
         if (printStream instanceof PrintStreamWrapper) {
             return ((Wrapper<PrintStream>) printStream).getInnerWrapper();

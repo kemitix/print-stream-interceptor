@@ -31,7 +31,7 @@ public void usage() {
     final String message1 = "This is an error message";
     final String message2 = "This is an ordinary message";
     //when
-    final Wrapper<PrintStream> redirectWrapper = new RedirectPrintStreamWrapper(core, redirectTo);
+    final Wrapper<PrintStream> redirectWrapper = PrintStreamWrapper.redirect(core, redirectTo);
     final Wrapper<PrintStream> filteredWrapper =
             new StringFilteredPrintStreamWrapper(redirectWrapper, o -> o.contains("error"));
     final Wrapper<PrintStream> copyWrapper = new CopyPrintStreamWrapper(filteredWrapper, copyTo);

@@ -1,6 +1,5 @@
 package net.kemitix.wrapper.printstream;
 
-import org.junit.Before;
 import org.junit.Test;
 
 import java.io.ByteArrayOutputStream;
@@ -18,81 +17,48 @@ import static org.assertj.core.api.Assertions.assertThatNullPointerException;
  */
 public class RedirectPrintStreamWrapperTest {
 
-    private OutputStream out;
+    private final OutputStream out = new ByteArrayOutputStream();
 
-    private PrintStream original;
+    private final OutputStream redirect = new ByteArrayOutputStream();
 
-    private PrintStream existing;
+    private final PrintStream original = new PrintStream(out);
 
-    private PrintStream redirectTo;
+    private final PrintStream existing = PrintStreamWrapper.passthrough(original);
 
-    private OutputStream redirect;
-
-    @Before
-    public void setUp() {
-        out = new ByteArrayOutputStream();
-        original = new PrintStream(out);
-        existing = PrintStreamWrapper.passthrough(original);
-        redirect = new ByteArrayOutputStream();
-        redirectTo = new PrintStream(redirect);
-    }
+    private final PrintStream redirectTo = new PrintStream(redirect);
 
     @Test
     public void requiresOriginalPrintStream() {
-        //given
-        original = null;
-        //then
-        assertThatNullPointerException().isThrownBy(() -> {
-            //when
-            new RedirectPrintStreamWrapper(original, redirectTo);
-        })
-                                        //and
-                                        .withMessage("Null output stream");
+        assertThatNullPointerException()
+                .isThrownBy(() -> PrintStreamWrapper.redirect((PrintStream) null, redirectTo))
+                .withMessage("Null output stream");
     }
 
     @Test
     public void requiresOriginalPrintStreamInterceptor() {
-        //given
-        existing = null;
-        //then
-        assertThatNullPointerException().isThrownBy(() -> {
-            //when
-            new RedirectPrintStreamWrapper((PrintStreamWrapper) existing, redirectTo);
-        })
-                                        //and
-                                        .withMessage("wrapper");
+        assertThatNullPointerException()
+                .isThrownBy(() -> PrintStreamWrapper.redirect((PrintStreamWrapper) null, redirectTo))
+                .withMessage("wrapper");
     }
 
     @Test
     public void requiresRedirectToOnPrintStream() {
-        //given
-        redirectTo = null;
-        //then
-        assertThatNullPointerException().isThrownBy(() -> {
-            //when
-            new RedirectPrintStreamWrapper(original, redirectTo);
-        })
-                                        //and
-                                        .withMessage("redirectTo");
+        assertThatNullPointerException()
+                .isThrownBy(() -> PrintStreamWrapper.redirect(original, null))
+                .withMessage("redirectTo");
     }
 
     @Test
     public void requiresRedirectToOnPrintStreamInterceptor() {
-        //given
-        redirectTo = null;
-        //then
-        assertThatNullPointerException().isThrownBy(() -> {
-            //when
-            new RedirectPrintStreamWrapper(existing, redirectTo).getWrapperSubject();
-        })
-                                        //and
-                                        .withMessage("redirectTo");
+        assertThatNullPointerException()
+                .isThrownBy(() -> PrintStreamWrapper.redirect(existing, null))
+                .withMessage("redirectTo");
     }
 
     @Test
     public void whenWriteByteThenDoNotWriteToOriginal() {
         //given
-        final PrintStream printStream = new RedirectPrintStreamWrapper(original, redirectTo);
+        final PrintStream printStream = PrintStreamWrapper.redirect(original, redirectTo);
         //when
         printStream.write('x');
         //then
@@ -102,7 +68,7 @@ public class RedirectPrintStreamWrapperTest {
     @Test
     public void whenWriteByteThenWriteToRedirectTo() {
         //given
-        final PrintStream printStream = new RedirectPrintStreamWrapper(original, redirectTo);
+        final PrintStream printStream = PrintStreamWrapper.redirect(original, redirectTo);
         //when
         printStream.write('x');
         //then
@@ -112,7 +78,7 @@ public class RedirectPrintStreamWrapperTest {
     @Test
     public void whenWriteByteArrayThenDoNotWriteToOriginal() throws IOException {
         //given
-        final PrintStream printStream = new RedirectPrintStreamWrapper(original, redirectTo);
+        final PrintStream printStream = PrintStreamWrapper.redirect(original, redirectTo);
         //when
         printStream.write("test".getBytes());
         //then
@@ -122,7 +88,7 @@ public class RedirectPrintStreamWrapperTest {
     @Test
     public void whenWriteByteArrayThenWriteToRedirectTo() throws IOException {
         //given
-        final PrintStream printStream = new RedirectPrintStreamWrapper(original, redirectTo);
+        final PrintStream printStream = PrintStreamWrapper.redirect(original, redirectTo);
         //when
         printStream.write("test".getBytes());
         //then
@@ -132,7 +98,7 @@ public class RedirectPrintStreamWrapperTest {
     @Test
     public void whenExistingInterceptorAndWriteByteThenWriteToRedirectTo() {
         //given
-        final PrintStream printStream = new RedirectPrintStreamWrapper(existing, redirectTo);
+        final PrintStream printStream = PrintStreamWrapper.redirect(existing, redirectTo);
         //when
         printStream.write('x');
         //then

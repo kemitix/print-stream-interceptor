@@ -31,7 +31,7 @@ import java.io.PrintStream;
  *
  * @author Paul Campbell (pcampbell@kemitix.net)
  */
-public class RedirectPrintStreamWrapper extends PassthroughPrintStreamWrapper {
+class RedirectPrintStreamWrapper extends PassthroughPrintStreamWrapper {
 
     private final PrintStream redirectTo;
 
@@ -40,8 +40,11 @@ public class RedirectPrintStreamWrapper extends PassthroughPrintStreamWrapper {
      *
      * @param core       the PrintStream to wrap
      * @param redirectTo the PrintStream to redirect writes to
+     *
+     * @deprecated Use {@link PrintStreamWrapper#redirect(PrintStream, PrintStream)}
      */
-    public RedirectPrintStreamWrapper(final PrintStream core, @NonNull final PrintStream redirectTo) {
+    @Deprecated
+    RedirectPrintStreamWrapper(final PrintStream core, @NonNull final PrintStream redirectTo) {
         super(core);
         this.redirectTo = redirectTo;
     }
@@ -51,8 +54,11 @@ public class RedirectPrintStreamWrapper extends PassthroughPrintStreamWrapper {
      *
      * @param wrapper    the wrapper to wrap
      * @param redirectTo the PrintStream to redirect writes to
+     *
+     * @deprecated Use {@link PrintStreamWrapper#redirect(PrintStreamWrapper, PrintStream)}
      */
-    public RedirectPrintStreamWrapper(
+    @Deprecated
+    RedirectPrintStreamWrapper(
             final PrintStreamWrapper wrapper,
             @NonNull final PrintStream redirectTo
                                      ) {
