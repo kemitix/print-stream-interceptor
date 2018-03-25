@@ -58,6 +58,21 @@ public interface PrintStreamWrapper extends Wrapper<PrintStream> {
         return new NestedPrintStreamWrapper(wrapper);
     }
 
+    static PrintStream passthrough(final PrintStream original) {
+        return new PassthroughPrintStreamWrapper(original);
+    }
+
+    static PrintStream passthrough(final PrintStreamWrapper wrapper) {
+        return new PassthroughPrintStreamWrapper(wrapper);
+    }
+
+    static Optional<Wrapper<PrintStream>> innerWrapper(final PrintStream printStream) {
+        if (printStream instanceof PrintStreamWrapper) {
+            return ((Wrapper<PrintStream>) printStream).getInnerWrapper();
+        }
+        return Optional.empty();
+    }
+
     /**
      * The content of the PrintStreamWrapper as a PrintStream.
      *

@@ -49,7 +49,7 @@ public class UsageExampleTest {
         final OutputStream coreArray = new ByteArrayOutputStream();
         final OutputStream redirectArray = new ByteArrayOutputStream();
         final OutputStream copyArray = new ByteArrayOutputStream();
-        final PrintStream printStream = new PassthroughPrintStreamWrapper(
+        final PrintStream printStream = PrintStreamWrapper.passthrough(
                 (PrintStreamWrapper) new CopyPrintStreamWrapper(
                         (PrintStreamWrapper) new StringFilterPrintStreamWrapper(
                                 (PrintStreamWrapper) new RedirectPrintStreamWrapper(

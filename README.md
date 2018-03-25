@@ -35,7 +35,7 @@ public void usage() {
     final Wrapper<PrintStream> filteredWrapper =
             new StringFilteredPrintStreamWrapper(redirectWrapper, o -> o.contains("error"));
     final Wrapper<PrintStream> copyWrapper = new CopyPrintStreamWrapper(filteredWrapper, copyTo);
-    final Wrapper<PrintStream> passthroughWrapper = new PassthroughPrintStreamWrapper(copyWrapper);
+    final Wrapper<PrintStream> passthroughWrapper = PrintStreamWrapper.passthrough(copyWrapper);
     final PrintStream printStream = passthroughWrapper.asCore();
     printStream.println(message1);
     printStream.println(message2);

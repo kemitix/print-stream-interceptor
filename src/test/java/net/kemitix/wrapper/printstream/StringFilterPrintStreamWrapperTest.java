@@ -20,7 +20,7 @@ public class StringFilterPrintStreamWrapperTest {
 
     private PrintStream original;
 
-    private PrintStreamWrapper existing;
+    private PrintStream existing;
 
     private Predicate<String> predicate;
 
@@ -28,7 +28,7 @@ public class StringFilterPrintStreamWrapperTest {
     public void setUp() {
         out = new ByteArrayOutputStream();
         original = new PrintStream(out);
-        existing = new PassthroughPrintStreamWrapper(original);
+        existing = PrintStreamWrapper.passthrough(original);
     }
 
     @Test

@@ -34,7 +34,7 @@ import java.util.Optional;
  *
  * @author Paul Campbell (pcampbell@kemitix.net)
  */
-public class PassthroughPrintStreamWrapper extends PrintStream implements PrintStreamWrapper {
+class PassthroughPrintStreamWrapper extends PrintStream implements PrintStreamWrapper {
 
     private final PrintStreamWrapper wrapper;
 
@@ -43,7 +43,7 @@ public class PassthroughPrintStreamWrapper extends PrintStream implements PrintS
      *
      * @param original the PrintStream to intercept
      */
-    public PassthroughPrintStreamWrapper(final PrintStream original) {
+    PassthroughPrintStreamWrapper(final PrintStream original) {
         super(original);
         wrapper = PrintStreamWrapper.wrap(original);
     }
@@ -53,7 +53,7 @@ public class PassthroughPrintStreamWrapper extends PrintStream implements PrintS
      *
      * @param object the wrapper to wrap
      */
-    public PassthroughPrintStreamWrapper(final PrintStreamWrapper object) {
+    PassthroughPrintStreamWrapper(final PrintStreamWrapper object) {
         super(Objects.requireNonNull(object, "wrapper")
                       .getWrapperSubject());
         wrapper = PrintStreamWrapper.wrap(object);

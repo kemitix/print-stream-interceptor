@@ -22,7 +22,7 @@ public class RedirectPrintStreamWrapperTest {
 
     private PrintStream original;
 
-    private PrintStreamWrapper existing;
+    private PrintStream existing;
 
     private PrintStream redirectTo;
 
@@ -32,7 +32,7 @@ public class RedirectPrintStreamWrapperTest {
     public void setUp() {
         out = new ByteArrayOutputStream();
         original = new PrintStream(out);
-        existing = new PassthroughPrintStreamWrapper(original);
+        existing = PrintStreamWrapper.passthrough(original);
         redirect = new ByteArrayOutputStream();
         redirectTo = new PrintStream(redirect);
     }
@@ -57,7 +57,7 @@ public class RedirectPrintStreamWrapperTest {
         //then
         assertThatNullPointerException().isThrownBy(() -> {
             //when
-            new RedirectPrintStreamWrapper(existing, redirectTo);
+            new RedirectPrintStreamWrapper((PrintStreamWrapper) existing, redirectTo);
         })
                                         //and
                                         .withMessage("wrapper");

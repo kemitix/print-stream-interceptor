@@ -24,14 +24,14 @@ public class ByteTransformPrintStreamWrapperTest {
 
     private Function<Byte, Byte> transformer;
 
-    private PrintStreamWrapper existing;
+    private PrintStream existing;
 
     @Before
     public void setUp() {
         out = new ByteArrayOutputStream();
         original = new PrintStream(out);
         transformer = Function.identity();
-        existing = new PassthroughPrintStreamWrapper(original);
+        existing = PrintStreamWrapper.passthrough(original);
     }
 
     @Test

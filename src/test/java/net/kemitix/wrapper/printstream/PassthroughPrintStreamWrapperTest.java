@@ -21,7 +21,6 @@ package net.kemitix.wrapper.printstream;
 
 import net.kemitix.wrapper.Wrapper;
 import org.assertj.core.api.ThrowableAssert;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.io.ByteArrayOutputStream;
@@ -29,7 +28,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
@@ -42,20 +40,14 @@ import static org.assertj.core.api.Assertions.assertThatNullPointerException;
  */
 public class PassthroughPrintStreamWrapperTest {
 
-    private OutputStream out;
+    private final ByteArrayOutputStream out = new ByteArrayOutputStream();
 
-    private PrintStream original;
-
-    @Before
-    public void setUp() {
-        out = new ByteArrayOutputStream();
-        original = new PrintStream(out);
-    }
+    private final PrintStream original = new PrintStream(out);
 
     @Test
     public void canWriteAByteUnmodified() {
         //given
-        final PrintStream wrapper = new PassthroughPrintStreamWrapper(original);
+        final PrintStream wrapper = PrintStreamWrapper.passthrough(original);
         //when
         wrapper.write('x');
         //then
@@ -65,7 +57,7 @@ public class PassthroughPrintStreamWrapperTest {
     @Test
     public void canWriteByteArrayUnmodified() throws IOException {
         //given
-        final PrintStream wrapper = new PassthroughPrintStreamWrapper(original);
+        final PrintStream wrapper = PrintStreamWrapper.passthrough(original);
         //when
         wrapper.write("test".getBytes());
         //then
@@ -75,7 +67,7 @@ public class PassthroughPrintStreamWrapperTest {
     @Test
     public void canWriteByteArraySubsectionUnmodified() throws IOException {
         //given
-        final PrintStream wrapper = new PassthroughPrintStreamWrapper(original);
+        final PrintStream wrapper = PrintStreamWrapper.passthrough(original);
         //when
         wrapper.write("test".getBytes(), 1, 2);
         //then
@@ -85,7 +77,7 @@ public class PassthroughPrintStreamWrapperTest {
     @Test
     public void writeNullByteArrayWillThrowNullPointerException() throws IOException {
         //given
-        final PrintStream wrapper = new PassthroughPrintStreamWrapper(original);
+        final PrintStream wrapper = PrintStreamWrapper.passthrough(original);
         //then
         assertThatNullPointerException().isThrownBy(
                 //when
@@ -95,7 +87,7 @@ public class PassthroughPrintStreamWrapperTest {
     @Test
     public void writeNullByteArraySubsectionWillThrowNullPointerException() {
         //given
-        final PrintStream wrapper = new PassthroughPrintStreamWrapper(original);
+        final PrintStream wrapper = PrintStreamWrapper.passthrough(original);
         //then
         assertThatNullPointerException().isThrownBy(
                 //when
@@ -107,7 +99,7 @@ public class PassthroughPrintStreamWrapperTest {
         //given
         final OutputStream redirectTo = new ByteArrayOutputStream();
         final PrintStreamWrapper first = new RedirectPrintStreamWrapper(original, new PrintStream(redirectTo));
-        final PassthroughPrintStreamWrapper second = new PassthroughPrintStreamWrapper(first);
+        final PrintStream second = PrintStreamWrapper.passthrough(first);
         //when
         second.write('x');
         //then
@@ -120,7 +112,7 @@ public class PassthroughPrintStreamWrapperTest {
         //given
         final OutputStream redirectTo = new ByteArrayOutputStream();
         final PrintStreamWrapper first = new RedirectPrintStreamWrapper(original, new PrintStream(redirectTo));
-        final PassthroughPrintStreamWrapper second = new PassthroughPrintStreamWrapper(first);
+        final PrintStream second = PrintStreamWrapper.passthrough(first);
         //when
         second.print("test");
         //then
@@ -134,10 +126,10 @@ public class PassthroughPrintStreamWrapperTest {
         final byte[] buf = "test".getBytes();
         final int off = 1;
         final int len = 4;
-        final PassthroughPrintStreamWrapper wrapper = new PassthroughPrintStreamWrapper(original);
+        final PrintStream wrapper = PrintStreamWrapper.passthrough(original);
         //when
-        final ThrowableAssert.ThrowingCallable code = () -> wrapper.forEachByteInBuffer(buf, off, len, o -> {
-        });
+        final ThrowableAssert.ThrowingCallable code = () ->
+                wrapper.write(buf, off, len);
         //then
         assertThatCode(code).isInstanceOf(IndexOutOfBoundsException.class);
     }
@@ -148,10 +140,9 @@ public class PassthroughPrintStreamWrapperTest {
         final byte[] buf = "test".getBytes();
         final int off = -1;
         final int len = 4;
-        final PassthroughPrintStreamWrapper wrapper = new PassthroughPrintStreamWrapper(original);
+        final PrintStream wrapper = PrintStreamWrapper.passthrough(original);
         //when
-        final ThrowableAssert.ThrowingCallable code = () -> wrapper.forEachByteInBuffer(buf, off, len, o -> {
-        });
+        final ThrowableAssert.ThrowingCallable code = () -> wrapper.write(buf, off, len);
         //then
         assertThatCode(code).isInstanceOf(IndexOutOfBoundsException.class);
     }
@@ -162,11 +153,10 @@ public class PassthroughPrintStreamWrapperTest {
         final byte[] buf = "test".getBytes();
         final int off = 3;
         final int len = 0;
-        final PassthroughPrintStreamWrapper wrapper = new PassthroughPrintStreamWrapper(original);
+        final PrintStream wrapper = PrintStreamWrapper.passthrough(original);
         final ThrowableAssert.ThrowingCallable code = () -> {
             //when
-            wrapper.forEachByteInBuffer(buf, off, len, o -> {
-            });
+            wrapper.write(buf, off, len);
         };
         //then
         assertThatCode(code).doesNotThrowAnyException();
@@ -178,10 +168,9 @@ public class PassthroughPrintStreamWrapperTest {
         final byte[] buf = "test".getBytes();
         final int off = 3;
         final int len = -1;
-        final PassthroughPrintStreamWrapper wrapper = new PassthroughPrintStreamWrapper(original);
+        final PrintStream wrapper = PrintStreamWrapper.passthrough(original);
         //when
-        final ThrowableAssert.ThrowingCallable code = () -> wrapper.forEachByteInBuffer(buf, off, len, o -> {
-        });
+        final ThrowableAssert.ThrowingCallable code = () -> wrapper.write(buf, off, len);
         //then
         assertThatCode(code).isInstanceOf(IndexOutOfBoundsException.class);
     }
@@ -192,10 +181,9 @@ public class PassthroughPrintStreamWrapperTest {
         final byte[] buf = "test".getBytes();
         final int off = 4;
         final int len = 1;
-        final PassthroughPrintStreamWrapper wrapper = new PassthroughPrintStreamWrapper(original);
+        final PrintStream wrapper = PrintStreamWrapper.passthrough(original);
         //when
-        final ThrowableAssert.ThrowingCallable code = () -> wrapper.forEachByteInBuffer(buf, off, len, o -> {
-        });
+        final ThrowableAssert.ThrowingCallable code = () -> wrapper.write(buf, off, len);
         //then
         assertThatCode(code).isInstanceOf(IndexOutOfBoundsException.class);
     }
@@ -206,10 +194,9 @@ public class PassthroughPrintStreamWrapperTest {
         final byte[] buf = "test".getBytes();
         final int off = 0;
         final int len = 5;
-        final PassthroughPrintStreamWrapper wrapper = new PassthroughPrintStreamWrapper(original);
+        final PrintStream wrapper = PrintStreamWrapper.passthrough(original);
         //when
-        final ThrowableAssert.ThrowingCallable code = () -> wrapper.forEachByteInBuffer(buf, off, len, o -> {
-        });
+        final ThrowableAssert.ThrowingCallable code = () -> wrapper.write(buf, off, len);
         //then
         assertThatCode(code).isInstanceOf(IndexOutOfBoundsException.class);
     }
@@ -220,22 +207,21 @@ public class PassthroughPrintStreamWrapperTest {
         final byte[] buf = "test".getBytes();
         final int off = 0;
         final int len = 4;
-        final PassthroughPrintStreamWrapper wrapper = new PassthroughPrintStreamWrapper(original);
-        final AtomicBoolean aBoolean = new AtomicBoolean();
+        final PrintStream wrapper = PrintStreamWrapper.passthrough(original);
         //when
-        wrapper.forEachByteInBuffer(buf, off, len, o -> aBoolean.set(true));
+        wrapper.write(buf, off, len);
         //then
-        assertThat(aBoolean).isTrue();
+        assertThat(out.toByteArray()).isEqualTo(buf);
     }
 
     @Test
     public void canGetInnerWrapper() {
         //given
         final PrintStream printStream = new PrintStream(new ByteArrayOutputStream());
-        final PassthroughPrintStreamWrapper wrapper =
-                new PassthroughPrintStreamWrapper(printStream);
+        final PrintStream wrapper =
+                PrintStreamWrapper.passthrough(printStream);
         //when
-        final Optional<Wrapper<PrintStream>> result = wrapper.getInnerWrapper();
+        final Optional<Wrapper<PrintStream>> result = PrintStreamWrapper.innerWrapper(wrapper);
         //then
         assertThat(result).isNotEmpty();
         result.ifPresent(printStreamWrapper -> {
@@ -243,5 +229,15 @@ public class PassthroughPrintStreamWrapperTest {
             assertThat(printStreamWrapper.getWrapperSubject()).isSameAs(printStream);
                 }
         );
+    }
+
+    @Test
+    public void whenNormalPrintStreamThenInnerWrapperIsEmpty() {
+        //given
+        final PrintStream printStream = new PrintStream(new ByteArrayOutputStream());
+        //when
+        final Optional<Wrapper<PrintStream>> result = PrintStreamWrapper.innerWrapper(printStream);
+        //then
+        assertThat(result).isEmpty();
     }
 }
