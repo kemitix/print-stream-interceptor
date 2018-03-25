@@ -6,7 +6,6 @@ import org.junit.Test;
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
-import java.util.function.Predicate;
 
 import static org.assertj.core.api.Assertions.assertThatNullPointerException;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -22,7 +21,7 @@ public class StringFilterPrintStreamWrapperTest {
 
     private PrintStream existing;
 
-    private Predicate<String> predicate;
+    private PrintStreamWrapper.StringFilter predicate;
 
     @Before
     public void setUp() {
@@ -51,7 +50,7 @@ public class StringFilterPrintStreamWrapperTest {
         //then
         assertThatNullPointerException().isThrownBy(() -> {
             //when
-            PrintStreamWrapper.filter(existing, null);
+            PrintStreamWrapper.filter(existing, predicate);
         })
                                         //and
                                         .withMessage("predicate");

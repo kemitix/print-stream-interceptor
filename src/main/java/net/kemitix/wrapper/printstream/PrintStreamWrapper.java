@@ -113,8 +113,14 @@ public interface PrintStreamWrapper extends Wrapper<PrintStream> {
 
     static PrintStream filter(
             final PrintStream printStream,
-            final Predicate<String> filter) {
+            final StringFilter filter) {
         return new StringFilterPrintStreamWrapper(printStream, filter);
+    }
+
+    static PrintStream filter(
+            final PrintStream printStream,
+            final ByteFilter filter) {
+        return new ByteFilterPrintStreamWrapper(printStream, filter);
     }
 
     static Optional<Wrapper<PrintStream>> innerWrapper(final PrintStream printStream) {
@@ -197,4 +203,7 @@ public interface PrintStreamWrapper extends Wrapper<PrintStream> {
             int off,
             int len
     );
+
+    interface StringFilter extends Predicate<String> {}
+    interface ByteFilter extends Predicate<Byte> {}
 }

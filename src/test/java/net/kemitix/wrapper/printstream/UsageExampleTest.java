@@ -55,7 +55,7 @@ public class UsageExampleTest {
                                 PrintStreamWrapper.redirect(
                                         new PrintStream(coreArray),
                                         new PrintStream(redirectArray)),
-                                o -> o.contains("error")),
+                                (String o) -> o.contains("error")),
                         new PrintStream(copyArray)));
         final String message1 = "This is an error message";
         final String message2 = "This is an ordinary message";
