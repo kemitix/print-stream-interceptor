@@ -52,20 +52,6 @@ class StringFilterPrintStreamWrapper extends PassthroughPrintStreamWrapper {
         this.predicate = predicate;
     }
 
-    /**
-     * Constructor to wrap in existing {@code Wrapper<PrintStream>}.
-     *
-     * @param wrapper   the wrapper to wrap
-     * @param predicate the predicate to apply to strings
-     */
-    StringFilterPrintStreamWrapper(
-            final PrintStreamWrapper wrapper,
-            @NonNull final Predicate<String> predicate
-                                         ) {
-        super(wrapper);
-        this.predicate = predicate;
-    }
-
     @Override
     public final void print(final String s) {
         if (predicate.test(s)) {

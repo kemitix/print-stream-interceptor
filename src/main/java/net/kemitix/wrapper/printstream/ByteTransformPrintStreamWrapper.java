@@ -34,7 +34,7 @@ import java.util.function.Function;
  * @author Paul Campbell (pcampbell@kemitix.net)
  * @see StringTransformPrintStreamWrapper
  */
-public class ByteTransformPrintStreamWrapper
+class ByteTransformPrintStreamWrapper
         extends PassthroughPrintStreamWrapper
         implements BytePrintStreamWrapper {
 
@@ -46,25 +46,11 @@ public class ByteTransformPrintStreamWrapper
      * @param original    the PrintStream to wrap
      * @param transformer the function to transform the byte
      */
-    public ByteTransformPrintStreamWrapper(
+    ByteTransformPrintStreamWrapper(
             final PrintStream original,
             @NonNull final Function<Byte, Byte> transformer
                                           ) {
         super(original);
-        this.transformer = transformer;
-    }
-
-    /**
-     * Constructor to wrap an existing {@code Wrapper<PrintStream>}.
-     *
-     * @param wrapper     the wrapper to wrap
-     * @param transformer the function to transform the byte
-     */
-    public ByteTransformPrintStreamWrapper(
-            final PrintStreamWrapper wrapper,
-            @NonNull final Function<Byte, Byte> transformer
-                                          ) {
-        super(wrapper);
         this.transformer = transformer;
     }
 

@@ -150,9 +150,16 @@ public interface PrintStreamWrapper extends Wrapper<PrintStream> {
 
     static PrintStream transform(
             final PrintStream original,
-            final Function<String, String> transformer
+            final StringTransform transformer
                                 ) {
         return new StringTransformPrintStreamWrapper(original, transformer);
+    }
+
+    static PrintStream transform(
+            final PrintStream original,
+            final ByteTransform transformer
+                                ) {
+        return new ByteTransformPrintStreamWrapper(original, transformer);
     }
 
     /**
@@ -214,4 +221,7 @@ public interface PrintStreamWrapper extends Wrapper<PrintStream> {
 
     interface StringFilter extends Predicate<String> {}
     interface ByteFilter extends Predicate<Byte> {}
+
+    interface StringTransform extends Function<String, String>{}
+    interface ByteTransform extends Function<Byte, Byte>{}
 }

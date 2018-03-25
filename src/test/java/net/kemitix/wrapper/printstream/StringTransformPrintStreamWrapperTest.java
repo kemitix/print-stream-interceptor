@@ -1,12 +1,10 @@
 package net.kemitix.wrapper.printstream;
 
-import org.junit.Before;
 import org.junit.Test;
 
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
-import java.util.function.Function;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatNullPointerException;
@@ -18,21 +16,13 @@ import static org.assertj.core.api.Assertions.assertThatNullPointerException;
  */
 public class StringTransformPrintStreamWrapperTest {
 
-    private OutputStream out;
+    private final OutputStream out = new ByteArrayOutputStream();
 
-    private PrintStream original;
+    private final PrintStream original = new PrintStream(out);
 
-    private Function<String, String> transformer;
+    private final PrintStream existing = PrintStreamWrapper.passthrough(original);
 
-    private PrintStream existing;
-
-    @Before
-    public void setUp() {
-        out = new ByteArrayOutputStream();
-        original = new PrintStream(out);
-        transformer = Function.identity();
-        existing = PrintStreamWrapper.passthrough(original);
-    }
+    private PrintStreamWrapper.StringTransform transformer = s -> s;
 
     @Test
     public void requireTransformerWhenWrappingPrintStream() {
@@ -78,7 +68,8 @@ public class StringTransformPrintStreamWrapperTest {
         //given
         final String in = "message in";
         final String expected = "message OUT\n";
-        final Function<String, String> transform = s -> s.replace("in", "OUT");
+        final PrintStreamWrapper.StringTransform transform =
+                s -> s.replace("in", "OUT");
         //when
         final PrintStream printStream = PrintStreamWrapper.transform(existing, transform);
         printStream.println(in);
