@@ -25,6 +25,7 @@ import net.kemitix.wrapper.Wrapper;
 
 import java.io.PrintStream;
 import java.util.Optional;
+import java.util.function.Predicate;
 
 /**
  * {@link Wrapper} for handling {@link PrintStream}.
@@ -108,6 +109,12 @@ public interface PrintStreamWrapper extends Wrapper<PrintStream> {
             final PrintStream redirectTo
                                ) {
         return new RedirectPrintStreamWrapper(original, redirectTo);
+    }
+
+    static PrintStream filter(
+            final PrintStream printStream,
+            final Predicate<String> filter) {
+        return new StringFilterPrintStreamWrapper(printStream, filter);
     }
 
     static Optional<Wrapper<PrintStream>> innerWrapper(final PrintStream printStream) {

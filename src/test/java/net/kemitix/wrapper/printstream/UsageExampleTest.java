@@ -51,7 +51,7 @@ public class UsageExampleTest {
         final OutputStream copyArray = new ByteArrayOutputStream();
         final PrintStream printStream = PrintStreamWrapper.passthrough(
                 PrintStreamWrapper.copy(
-                        new StringFilterPrintStreamWrapper(
+                        PrintStreamWrapper.filter(
                                 PrintStreamWrapper.redirect(
                                         new PrintStream(coreArray),
                                         new PrintStream(redirectArray)),
