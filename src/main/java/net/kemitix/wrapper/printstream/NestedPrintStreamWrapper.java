@@ -57,12 +57,12 @@ class NestedPrintStreamWrapper implements PrintStreamWrapper {
     }
 
     @Override
-    public PrintStream wrapperSubject() {
-        return wrapper.wrapperSubject();
+    public PrintStream getWrapperSubject() {
+        return wrapper.getWrapperSubject();
     }
 
     @Override
-    public Optional<Wrapper<PrintStream>> wrapperInner() {
+    public Optional<Wrapper<PrintStream>> getInnerWrapper() {
         return Optional.of(wrapper);
     }
 }

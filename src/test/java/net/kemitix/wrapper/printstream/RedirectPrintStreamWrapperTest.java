@@ -83,7 +83,7 @@ public class RedirectPrintStreamWrapperTest {
         //then
         assertThatNullPointerException().isThrownBy(() -> {
             //when
-            new RedirectPrintStreamWrapper(existing, redirectTo).wrapperSubject();
+            new RedirectPrintStreamWrapper(existing, redirectTo).getWrapperSubject();
         })
                                         //and
                                         .withMessage("redirectTo");

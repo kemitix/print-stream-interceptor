@@ -56,7 +56,7 @@ public class PassthroughPrintStreamWrapper extends PrintStream implements PrintS
      */
     public PassthroughPrintStreamWrapper(final PrintStreamWrapper object) {
         super(Objects.requireNonNull(object, "wrapper")
-                      .wrapperSubject());
+                      .getWrapperSubject());
         wrapper = PrintStreamWrapper.wrap(object);
     }
 
@@ -116,12 +116,12 @@ public class PassthroughPrintStreamWrapper extends PrintStream implements PrintS
     }
 
     @Override
-    public final PrintStream wrapperSubject() {
-        return wrapper.wrapperSubject();
+    public final PrintStream getWrapperSubject() {
+        return wrapper.getWrapperSubject();
     }
 
     @Override
-    public final Optional<Wrapper<PrintStream>> wrapperInner() {
+    public final Optional<Wrapper<PrintStream>> getInnerWrapper() {
         return Optional.of(wrapper);
     }
 }

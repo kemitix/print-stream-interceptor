@@ -66,7 +66,7 @@ public interface PrintStreamWrapper extends Wrapper<PrintStream> {
     default PrintStream printStreamDelegate() {
         return printStreamWrapperInner()
                 .map(PrintStreamWrapper::printStreamDelegate)
-                .orElseGet(this::wrapperSubject);
+                .orElseGet(this::getWrapperSubject);
     }
 
     /**

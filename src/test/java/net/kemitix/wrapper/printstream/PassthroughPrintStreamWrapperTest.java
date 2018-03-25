@@ -31,7 +31,9 @@ import java.io.PrintStream;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatNullPointerException;
 
 /**
  * Tests for {@link PassthroughPrintStreamWrapper}s.
@@ -233,12 +235,12 @@ public class PassthroughPrintStreamWrapperTest {
         final PassthroughPrintStreamWrapper wrapper =
                 new PassthroughPrintStreamWrapper(printStream);
         //when
-        final Optional<Wrapper<PrintStream>> result = wrapper.wrapperInner();
+        final Optional<Wrapper<PrintStream>> result = wrapper.getInnerWrapper();
         //then
         assertThat(result).isNotEmpty();
         result.ifPresent(printStreamWrapper -> {
-            assertThat(printStreamWrapper.wrapperInner()).isEmpty();
-            assertThat(printStreamWrapper.wrapperSubject()).isSameAs(printStream);
+            assertThat(printStreamWrapper.getInnerWrapper()).isEmpty();
+            assertThat(printStreamWrapper.getWrapperSubject()).isSameAs(printStream);
                 }
         );
     }

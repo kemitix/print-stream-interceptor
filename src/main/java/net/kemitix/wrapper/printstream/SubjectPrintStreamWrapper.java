@@ -35,7 +35,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 class SubjectPrintStreamWrapper implements PrintStreamWrapper {
 
-    private final PrintStream subject;
+    private final PrintStream wrapperSubject;
 
     @Override
     public Optional<PrintStreamWrapper> printStreamWrapperInner() {
@@ -44,7 +44,7 @@ class SubjectPrintStreamWrapper implements PrintStreamWrapper {
 
     @Override
     public void write(final int b) {
-        subject.write(b);
+        wrapperSubject.write(b);
     }
 
     @Override
@@ -53,16 +53,16 @@ class SubjectPrintStreamWrapper implements PrintStreamWrapper {
             final int off,
             final int len
     ) {
-        subject.write(buf, off, len);
+        wrapperSubject.write(buf, off, len);
     }
 
     @Override
-    public PrintStream wrapperSubject() {
-        return subject;
+    public PrintStream getWrapperSubject() {
+        return wrapperSubject;
     }
 
     @Override
-    public Optional<Wrapper<PrintStream>> wrapperInner() {
+    public Optional<Wrapper<PrintStream>> getInnerWrapper() {
         return Optional.empty();
     }
 }
