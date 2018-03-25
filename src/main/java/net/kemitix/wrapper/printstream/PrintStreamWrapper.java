@@ -64,10 +64,6 @@ public interface PrintStreamWrapper extends Wrapper<PrintStream> {
         return new PassthroughPrintStreamWrapper(original);
     }
 
-    static PrintStream passthrough(final PrintStreamWrapper wrapper) {
-        return new PassthroughPrintStreamWrapper(wrapper);
-    }
-
     /**
      * Creates a {@link PrintStreamWrapper} that sends all {@link PrintStream#write(int)}
      * and {@link PrintStream#write(byte[], int, int)} calls to the redirectTo PrintStream.
