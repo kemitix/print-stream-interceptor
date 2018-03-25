@@ -34,7 +34,9 @@ import java.util.function.Function;
  * @author Paul Campbell (pcampbell@kemitix.net)
  * @see StringTransformPrintStreamWrapper
  */
-public class ByteTransformPrintStreamWrapper extends PassthroughPrintStreamWrapper {
+public class ByteTransformPrintStreamWrapper
+        extends PassthroughPrintStreamWrapper
+        implements BytePrintStreamWrapper {
 
     private final Function<Byte, Byte> transformer;
 
@@ -45,7 +47,8 @@ public class ByteTransformPrintStreamWrapper extends PassthroughPrintStreamWrapp
      * @param transformer the function to transform the byte
      */
     public ByteTransformPrintStreamWrapper(
-            final PrintStream original, @NonNull final Function<Byte, Byte> transformer
+            final PrintStream original,
+            @NonNull final Function<Byte, Byte> transformer
                                           ) {
         super(original);
         this.transformer = transformer;
@@ -71,7 +74,11 @@ public class ByteTransformPrintStreamWrapper extends PassthroughPrintStreamWrapp
     }
 
     @Override
-    public final void write(final byte[] buf, final int off, final int len) {
-        forEachByteInBuffer(buf, off, len, this::write);
+    public final void write(
+            final byte[] buf,
+            final int off,
+            final int len
+                           ) {
+        BytePrintStreamWrapper.forEachByteInBuffer(buf, off, len, this::write);
     }
 }

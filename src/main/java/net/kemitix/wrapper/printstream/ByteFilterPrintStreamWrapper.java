@@ -34,7 +34,9 @@ import java.util.function.Predicate;
  *
  * @author Paul Campbell (pcampbell@kemitix.net)
  */
-public class ByteFilterPrintStreamWrapper extends PassthroughPrintStreamWrapper {
+public class ByteFilterPrintStreamWrapper
+        extends PassthroughPrintStreamWrapper
+        implements BytePrintStreamWrapper {
 
     private final Predicate<Byte> predicate;
 
@@ -45,7 +47,8 @@ public class ByteFilterPrintStreamWrapper extends PassthroughPrintStreamWrapper 
      * @param predicate the predicate to apply to bytes
      */
     public ByteFilterPrintStreamWrapper(
-            final PrintStream original, @NonNull final Predicate<Byte> predicate
+            final PrintStream original,
+            @NonNull final Predicate<Byte> predicate
                                        ) {
         super(original);
         this.predicate = predicate;
@@ -73,7 +76,11 @@ public class ByteFilterPrintStreamWrapper extends PassthroughPrintStreamWrapper 
     }
 
     @Override
-    public final void write(final byte[] buf, final int off, final int len) {
-        forEachByteInBuffer(buf, off, len, this::write);
+    public final void write(
+            final byte[] buf,
+            final int off,
+            final int len
+                           ) {
+        BytePrintStreamWrapper.forEachByteInBuffer(buf, off, len, this::write);
     }
 }
