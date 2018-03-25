@@ -25,6 +25,7 @@ import net.kemitix.wrapper.Wrapper;
 
 import java.io.PrintStream;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 /**
@@ -145,6 +146,13 @@ public interface PrintStreamWrapper extends Wrapper<PrintStream> {
             final PrintStream right
                            ) {
         return new CopyPrintStreamWrapper(left, right);
+    }
+
+    static PrintStream transform(
+            final PrintStream original,
+            final Function<String, String> transformer
+                                ) {
+        return new StringTransformPrintStreamWrapper(original, transformer);
     }
 
     /**

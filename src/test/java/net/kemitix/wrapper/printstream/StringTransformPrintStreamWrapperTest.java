@@ -41,7 +41,7 @@ public class StringTransformPrintStreamWrapperTest {
         //then
         assertThatNullPointerException().isThrownBy(() -> {
             //when
-            new StringTransformPrintStreamWrapper(original, transformer);
+            PrintStreamWrapper.transform(original, transformer);
         })
                                         //and
                                         .withMessage("transformer");
@@ -54,7 +54,7 @@ public class StringTransformPrintStreamWrapperTest {
         //then
         assertThatNullPointerException().isThrownBy(() -> {
             //when
-            new StringTransformPrintStreamWrapper(existing, transformer);
+            PrintStreamWrapper.transform(existing, transformer);
         })
                                         //and
                                         .withMessage("transformer");
@@ -67,7 +67,7 @@ public class StringTransformPrintStreamWrapperTest {
         final String expected = "message OUT";
         transformer = s -> s.replace("in", "OUT");
         //when
-        final PrintStream printStream = new StringTransformPrintStreamWrapper(original, transformer);
+        final PrintStream printStream = PrintStreamWrapper.transform(original, transformer);
         printStream.print(in);
         //then
         assertThat(out.toString()).isEqualTo(expected);
@@ -80,7 +80,7 @@ public class StringTransformPrintStreamWrapperTest {
         final String expected = "message OUT\n";
         final Function<String, String> transform = s -> s.replace("in", "OUT");
         //when
-        final PrintStream printStream = new StringTransformPrintStreamWrapper(existing, transform);
+        final PrintStream printStream = PrintStreamWrapper.transform(existing, transform);
         printStream.println(in);
         //then
         assertThat(out.toString()).isEqualTo(expected);
