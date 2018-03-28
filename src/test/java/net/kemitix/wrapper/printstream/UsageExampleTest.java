@@ -47,14 +47,11 @@ public class UsageExampleTest {
     public void usage() {
         //given
         final OutputStream coreArray = new ByteArrayOutputStream();
-        final OutputStream redirectArray = new ByteArrayOutputStream();
         final OutputStream copyArray = new ByteArrayOutputStream();
         final PrintStream printStream = PrintStreamWrapper.passthrough(
                 PrintStreamWrapper.copy(
                         PrintStreamWrapper.filter(
-                                PrintStreamWrapper.redirect(
-                                        new PrintStream(coreArray),
-                                        new PrintStream(redirectArray)),
+                                new PrintStream(coreArray),
                                 (String o) -> o.contains("error")),
                         new PrintStream(copyArray)));
         final String message1 = "This is an error message";
@@ -64,7 +61,6 @@ public class UsageExampleTest {
         printStream.println(message2);
         //then
         assertThat(coreArray.toString()).contains("");
-        assertThat(redirectArray.toString()).contains(message1);
         assertThat(copyArray.toString()).contains(message1, message2);
     }
 }

@@ -10,13 +10,12 @@ Wrappers for `PrintStream` with copy, redirect, filter and passthrough implement
 
 Usage for the following (contrived) example:
 ```
-println("...") ===> passthrough ===> copy ===> filter ---> redirect =x=> [coreArray]
-                                          \==> [copyArray]          \==> [redirectArray]
+println("...") ===> passthrough ===> copy ===> filter ---> [coreArray]
+                                          \==> [copyArray]
 ```
 
 * `copyArray` receives everything
-* `redirectArray` receives only what passes the filter
-* `coreArray` receives nothing
+* `coreArray` receives filtered output
 
 ```java
 @Test
@@ -24,24 +23,20 @@ public void usage() {
     //given
     final OutputStream coreArray = new ByteArrayOutputStream();
     final PrintStream core = new PrintStream(coreArray);
-    final OutputStream redirectArray = new ByteArrayOutputStream();
-    final PrintStream redirectTo = new PrintStream(redirectArray);
     final OutputStream copyArray = new ByteArrayOutputStream();
     final PrintStream copyTo = new PrintStream(copyArray);
     final String message1 = "This is an error message";
     final String message2 = "This is an ordinary message";
     //when
-    final Wrapper<PrintStream> redirectWrapper = PrintStreamWrapper.redirect(core, redirectTo);
     final Wrapper<PrintStream> filteredWrapper =
-            new StringFilteredPrintStreamWrapper(redirectWrapper, o -> o.contains("error"));
-    final Wrapper<PrintStream> copyWrapper = new CopyPrintStreamWrapper(filteredWrapper, copyTo);
+            PrintStreamWrapper.filtered(o -> o.contains("error"));
+    final Wrapper<PrintStream> copyWrapper = PrintStreamWrapper.copy(filteredWrapper, copyTo);
     final Wrapper<PrintStream> passthroughWrapper = PrintStreamWrapper.passthrough(copyWrapper);
     final PrintStream printStream = passthroughWrapper.asCore();
     printStream.println(message1);
     printStream.println(message2);
     //then
-    assertThat(coreArray.toString()).contains("");
-    assertThat(redirectArray.toString()).contains(message1);
+    assertThat(coreArray.toString()).contains(message1);
     assertThat(copyArray.toString()).contains(message1, message2);
 }
 ```

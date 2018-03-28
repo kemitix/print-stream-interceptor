@@ -29,9 +29,7 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.assertj.core.api.Assertions.assertThatNullPointerException;
+import static org.assertj.core.api.Assertions.*;
 
 /**
  * Tests for {@link PassthroughPrintStreamWrapper}s.
@@ -97,27 +95,29 @@ public class PassthroughPrintStreamWrapperTest {
     @Test
     public void writeByteToSecondWrapperDelegatesToFirst() {
         //given
-        final OutputStream redirectTo = new ByteArrayOutputStream();
-        final PrintStream first = PrintStreamWrapper.redirect(original, new PrintStream(redirectTo));
+        final OutputStream copyTo = new ByteArrayOutputStream();
+        final PrintStream first = PrintStreamWrapper.copy(
+                original, new PrintStream(copyTo));
         final PrintStream second = PrintStreamWrapper.passthrough(first);
         //when
         second.write('x');
         //then
-        assertThat(redirectTo.toString()).isEqualTo("x");
-        assertThat(out.toString()).isEmpty();
+        assertThat(copyTo.toString()).isEqualTo("x");
+        assertThat(out.toString()).isEqualTo("x");
     }
 
     @Test
     public void writeStringToSecondWrapperDelegatesToFirst() {
         //given
-        final OutputStream redirectTo = new ByteArrayOutputStream();
-        final PrintStream first = PrintStreamWrapper.redirect(original, new PrintStream(redirectTo));
+        final OutputStream copyTo = new ByteArrayOutputStream();
+        final PrintStream first = PrintStreamWrapper.copy(
+                original, new PrintStream(copyTo));
         final PrintStream second = PrintStreamWrapper.passthrough(first);
         //when
         second.print("test");
         //then
-        assertThat(redirectTo.toString()).isEqualTo("test");
-        assertThat(out.toString()).isEmpty();
+        assertThat(copyTo.toString()).isEqualTo("test");
+        assertThat(out.toString()).isEqualTo("test");
     }
 
     @Test
