@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Paul Campbell
+ * Copyright (c) 2018 Paul Campbell
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software
  * and associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -22,7 +22,6 @@
 package net.kemitix.wrapper.printstream;
 
 import lombok.NonNull;
-import net.kemitix.wrapper.Wrapper;
 
 import java.io.PrintStream;
 import java.util.function.Function;
@@ -33,7 +32,7 @@ import java.util.function.Function;
  *
  * @author Paul Campbell (pcampbell@kemitix.net)
  */
-public class StringTransformPrintStreamWrapper extends PassthroughPrintStreamWrapper {
+class StringTransformPrintStreamWrapper extends PassthroughPrintStreamWrapper {
 
     private final Function<String, String> transformer;
 
@@ -43,28 +42,15 @@ public class StringTransformPrintStreamWrapper extends PassthroughPrintStreamWra
      * @param original    the PrintStream to wrap
      * @param transformer the function to transform the string
      */
-    public StringTransformPrintStreamWrapper(
+    StringTransformPrintStreamWrapper(
             final PrintStream original, @NonNull final Function<String, String> transformer
                                             ) {
         super(original);
         this.transformer = transformer;
     }
 
-    /**
-     * Constructor to wrap an existing {@code Wrapper<PrintStream>}.
-     *
-     * @param wrapper     the wrapper to wrap
-     * @param transformer the function to transform the string
-     */
-    public StringTransformPrintStreamWrapper(
-            final Wrapper<PrintStream> wrapper, @NonNull final Function<String, String> transformer
-                                            ) {
-        super(wrapper);
-        this.transformer = transformer;
-    }
-
     @Override
     public final void print(final String s) {
-        getWrapperDelegate().print(transformer.apply(s));
+        printStreamDelegate().print(transformer.apply(s));
     }
 }

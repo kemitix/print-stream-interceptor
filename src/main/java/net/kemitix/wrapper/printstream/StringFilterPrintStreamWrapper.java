@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Paul Campbell
+ * Copyright (c) 2018 Paul Campbell
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software
  * and associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -22,7 +22,6 @@
 package net.kemitix.wrapper.printstream;
 
 import lombok.NonNull;
-import net.kemitix.wrapper.Wrapper;
 
 import java.io.PrintStream;
 import java.util.function.Predicate;
@@ -38,7 +37,7 @@ import java.util.function.Predicate;
  *
  * @author Paul Campbell (pcampbell@kemitix.net)
  */
-public class StringFilterPrintStreamWrapper extends PassthroughPrintStreamWrapper {
+class StringFilterPrintStreamWrapper extends PassthroughPrintStreamWrapper {
 
     private final Predicate<String> predicate;
 
@@ -48,21 +47,8 @@ public class StringFilterPrintStreamWrapper extends PassthroughPrintStreamWrappe
      * @param core      the PrintStream to wrap
      * @param predicate the predicate to apply to strings
      */
-    public StringFilterPrintStreamWrapper(final PrintStream core, @NonNull final Predicate<String> predicate) {
+    StringFilterPrintStreamWrapper(final PrintStream core, @NonNull final Predicate<String> predicate) {
         super(core);
-        this.predicate = predicate;
-    }
-
-    /**
-     * Constructor to wrap in existing {@code Wrapper<PrintStream>}.
-     *
-     * @param wrapper   the wrapper to wrap
-     * @param predicate the predicate to apply to strings
-     */
-    public StringFilterPrintStreamWrapper(
-            final Wrapper<PrintStream> wrapper, @NonNull final Predicate<String> predicate
-                                         ) {
-        super(wrapper);
         this.predicate = predicate;
     }
 

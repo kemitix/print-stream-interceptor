@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Paul Campbell
+ * Copyright (c) 2018 Paul Campbell
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software
  * and associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -22,13 +22,10 @@
 package net.kemitix.wrapper.printstream;
 
 import lombok.NonNull;
-import lombok.val;
 import net.kemitix.wrapper.Wrapper;
-import net.kemitix.wrapper.WrapperState;
 
 import java.io.PrintStream;
-import java.util.Objects;
-import java.util.function.Consumer;
+import java.util.Optional;
 
 /**
  * Basic wrapper for {@link PrintStream} that simply passes all writes to the intercepted PrintStream, or to another
@@ -36,96 +33,58 @@ import java.util.function.Consumer;
  *
  * @author Paul Campbell (pcampbell@kemitix.net)
  */
-public class PassthroughPrintStreamWrapper extends PrintStream implements Wrapper<PrintStream> {
+class PassthroughPrintStreamWrapper extends PrintStream implements PrintStreamWrapper {
 
-    private final WrapperState<PrintStream> wrapperState;
+    private final PrintStreamWrapper wrapper;
 
     /**
      * Constructor to wrap a PrintStream.
      *
      * @param original the PrintStream to intercept
      */
-    public PassthroughPrintStreamWrapper(final PrintStream original) {
+    PassthroughPrintStreamWrapper(final PrintStream original) {
         super(original);
-        this.wrapperState = new WrapperState<>(original);
+        wrapper = wrap(original);
+    }
+
+    private PrintStreamWrapper wrap(final PrintStream original) {
+        return new SubjectPrintStreamWrapper(original);
     }
 
     /**
-     * Constructor to wrap an existing {@code Wrapper<PrintStream>}.
-     *
-     * @param object the wrapper to wrap
-     */
-    public PassthroughPrintStreamWrapper(final Wrapper<PrintStream> object) {
-        super(Objects.requireNonNull(object, "wrapper")
-                     .getWrapperCore());
-        this.wrapperState = new WrapperState<>(object);
-    }
-
-    /**
-     * Writes the specified byte to this stream.
-     *
-     * <p>If the byte is a newline and automatic flushing is enabled then the flush method will be invoked.</p>
-     *
-     * <p>Note that the byte is written as given; to write a character that will be translated according to the
-     * platform's default character encoding, use the print(char) or println(char) methods.</p>
-     *
-     * <p>This implementation passes the byte, unmodified, to the intercepted {@link PrintStream} or {@code
-     * Wrapper<PrintStream>}.</p>
+     * Write the byte to the wrapped PrintStream or PrintStreamWrapper.
      *
      * @param b The byte to be written
      *
-     * @see #print(char)
-     * @see #println(char)
      */
     @Override
     public void write(final int b) {
-        val delegate = getWrapperDelegate();
-        delegate.write(b);
+        wrapper.write(b);
     }
 
     /**
-     * Writes len bytes from the specified byte array starting at offset off to this stream.
-     *
-     * <p>If automatic flushing is enabled then the flush method will be invoked.</p>
-     *
-     * <p>Note that the bytes will be written as given; to write characters that will be translated according to the
-     * platform's default character encoding, use the print(char) or println(char) methods.</p>
-     *
-     * <p>This implementation passes the bytes, unmodified, to the intercepted {@link PrintStream} or {@code
-     * Wrapper<PrintStream>}.</p>
+     * Write the contents of the byte array to the wrapped PrintStream of PrintStreamWrapper.
      *
      * @param buf A byte array
      * @param off Offset from which to start taking bytes
      * @param len Number of bytes to write
      */
     @Override
-    public void write(@NonNull final byte[] buf, final int off, final int len) {
-        val delegate = getWrapperDelegate();
-        delegate.write(buf, off, len);
+    public void write(
+            @NonNull final byte[] buf,
+            final int off,
+            final int len
+                     ) {
+        wrapper.write(buf, off, len);
     }
 
     @Override
-    public final WrapperState<PrintStream> getWrapperState() {
-        return wrapperState;
+    public PrintStream getWrapperSubject() {
+        return wrapper.getWrapperSubject();
     }
 
-    /**
-     * Scan the buffer, from off to len, and give it to the byteConsumer.
-     *
-     * @param buf          the buffer to process
-     * @param off          the offset within the buffer to begin
-     * @param len          the number of bytes to process
-     * @param byteConsumer the consumer to process each byte
-     */
-    protected final void forEachByteInBuffer(
-            final byte[] buf, final int off, final int len, final Consumer<Byte> byteConsumer
-                                            ) {
-        if (len < 0) {
-            throw new IndexOutOfBoundsException(
-                    String.format("buf.length: %d, off: %d, len: %d", buf.length, off, len));
-        }
-        for (int i = 0; i < len; i++) {
-            byteConsumer.accept(buf[off + i]);
-        }
+    @Override
+    public final Optional<Wrapper<PrintStream>> getInnerWrapper() {
+        return Optional.of(wrapper);
     }
 }

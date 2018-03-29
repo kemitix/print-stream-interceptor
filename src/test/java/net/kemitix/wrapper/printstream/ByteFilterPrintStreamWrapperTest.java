@@ -1,6 +1,5 @@
 package net.kemitix.wrapper.printstream;
 
-import net.kemitix.wrapper.Wrapper;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -8,7 +7,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
-import java.util.function.Predicate;
 
 import static org.assertj.core.api.Assertions.assertThatNullPointerException;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -24,15 +22,15 @@ public class ByteFilterPrintStreamWrapperTest {
 
     private PrintStream original;
 
-    private Predicate<Byte> predicate;
+    private PrintStreamWrapper.ByteFilter predicate;
 
-    private Wrapper<PrintStream> existing;
+    private PrintStream existing;
 
     @Before
     public void setUp() {
         out = new ByteArrayOutputStream();
         original = new PrintStream(out);
-        existing = new PassthroughPrintStreamWrapper(original);
+        existing = PrintStreamWrapper.filter(original, (String in) -> true);
     }
 
     @Test
@@ -42,7 +40,7 @@ public class ByteFilterPrintStreamWrapperTest {
         //then
         assertThatNullPointerException().isThrownBy(() -> {
             //when
-            new ByteFilterPrintStreamWrapper(original, predicate);
+            PrintStreamWrapper.filter(original, predicate);
         })
                                         //and
                                         .withMessage("predicate");
@@ -55,17 +53,17 @@ public class ByteFilterPrintStreamWrapperTest {
         //then
         assertThatNullPointerException().isThrownBy(() -> {
             //when
-            new ByteFilterPrintStreamWrapper(existing, predicate);
+            PrintStreamWrapper.filter(existing, predicate);
         })
                                         //and
                                         .withMessage("predicate");
     }
 
     @Test
-    public void whenPredicateTrueAndWrappingOriginalThenFilterWritesByte() throws IOException {
+    public void whenPredicateTrueAndWrappingOriginalThenFilterWritesByte() {
         //given
         predicate = o -> true;
-        final PrintStream wrapper = new ByteFilterPrintStreamWrapper(original, predicate);
+        final PrintStream wrapper = PrintStreamWrapper.filter(original, predicate);
         //when
         wrapper.write('x');
         //then
@@ -73,10 +71,10 @@ public class ByteFilterPrintStreamWrapperTest {
     }
 
     @Test
-    public void whenPredicateTrueAndWrappingWrapperThenFilterWritesByte() throws IOException {
+    public void whenPredicateTrueAndWrappingWrapperThenFilterWritesByte() {
         //given
         predicate = o -> true;
-        final PrintStream wrapper = new ByteFilterPrintStreamWrapper(existing, predicate);
+        final PrintStream wrapper = PrintStreamWrapper.filter(existing, predicate);
         //when
         wrapper.write('x');
         //then
@@ -87,7 +85,7 @@ public class ByteFilterPrintStreamWrapperTest {
     public void whenPredicateTrueThenFilterWritesByteArray() throws IOException {
         //given
         predicate = o -> true;
-        final PrintStream wrapper = new ByteFilterPrintStreamWrapper(original, predicate);
+        final PrintStream wrapper = PrintStreamWrapper.filter(original, predicate);
         //when
         wrapper.write("test".getBytes());
         //then
@@ -95,10 +93,10 @@ public class ByteFilterPrintStreamWrapperTest {
     }
 
     @Test
-    public void whenPredicateFalseThenFilterDoesNotWriteByte() throws IOException {
+    public void whenPredicateFalseThenFilterDoesNotWriteByte() {
         //given
         predicate = o -> false;
-        final PrintStream wrapper = new ByteFilterPrintStreamWrapper(original, predicate);
+        final PrintStream wrapper = PrintStreamWrapper.filter(original, predicate);
         //when
         wrapper.write('x');
         //then
@@ -109,7 +107,7 @@ public class ByteFilterPrintStreamWrapperTest {
     public void whenPredicateFalseThenFilterDoesNotWritesByteArray() throws IOException {
         //given
         predicate = o -> false;
-        final PrintStream wrapper = new ByteFilterPrintStreamWrapper(original, predicate);
+        final PrintStream wrapper = PrintStreamWrapper.filter(original, predicate);
         //when
         wrapper.write("test".getBytes());
         //then
@@ -120,7 +118,7 @@ public class ByteFilterPrintStreamWrapperTest {
     public void whenPredicateTrueThenFilterWritesByteArraySubsection() {
         //given
         predicate = o -> true;
-        final PrintStream wrapper = new ByteFilterPrintStreamWrapper(original, predicate);
+        final PrintStream wrapper = PrintStreamWrapper.filter(original, predicate);
         //when
         wrapper.write("test".getBytes(), 1, 2);
         //then
@@ -131,7 +129,7 @@ public class ByteFilterPrintStreamWrapperTest {
     public void whenPredicateSelectNonEThenFilterWritesByteArrayWithoutAnyEs() throws IOException {
         //given
         predicate = o -> o != 'e';
-        final PrintStream wrapper = new ByteFilterPrintStreamWrapper(original, predicate);
+        final PrintStream wrapper = PrintStreamWrapper.filter(original, predicate);
         //when
         wrapper.write("test".getBytes());
         //then
@@ -142,7 +140,7 @@ public class ByteFilterPrintStreamWrapperTest {
     public void whenPredicateSelectsNonSThenFilterPrintsStringWithoutAnySs() {
         //given
         predicate = o -> o != 's';
-        final PrintStream wrapper = new ByteFilterPrintStreamWrapper(original, predicate);
+        final PrintStream wrapper = PrintStreamWrapper.filter(original, predicate);
         //when
         wrapper.print("test");
         //then
@@ -153,7 +151,7 @@ public class ByteFilterPrintStreamWrapperTest {
     public void whenPredicateSelectsNonOThenFilterPrintsObjectWithoutAnyOs() {
         //given
         predicate = o -> o != 'O';
-        final PrintStream wrapper = new ByteFilterPrintStreamWrapper(original, predicate);
+        final PrintStream wrapper = PrintStreamWrapper.filter(original, predicate);
         //when
         wrapper.print(new Object());
         //then

@@ -21,47 +21,37 @@
 
 package net.kemitix.wrapper.printstream;
 
-import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
-import java.io.PrintStream;
-import java.util.function.Predicate;
+import java.util.function.Consumer;
+import java.util.stream.IntStream;
 
 /**
- * Wrapper for {@link PrintStream} that tests bytes with a supplied {@link Predicate} before writing to any inner
- * wrapper or, if there isn't one, to the core {@link PrintStream}.
- *
- * <p>If the Predicate returns {@code false} for the byte, then the byte will not be written.</p>
+ * Represents a segment of a buffer of bytes.
  *
  * @author Paul Campbell (pcampbell@kemitix.net)
  */
-class ByteFilterPrintStreamWrapper extends PassthroughPrintStreamWrapper {
+@RequiredArgsConstructor
+class ByteBufferSegment {
 
-    private final Predicate<Byte> predicate;
+    private final byte[] buf;
+
+    private final int off;
+
+    private final int len;
 
     /**
-     * Constructor to wrap in existing PrintStream.
+     * Scan the buffer, from off to len, and give it to the byteConsumer.
      *
-     * @param original  the PrintStream to wrap
-     * @param predicate the predicate to apply to bytes
+     * @param byteConsumer the consumer to process each byte
      */
-    ByteFilterPrintStreamWrapper(
-            final PrintStream original,
-            @NonNull final Predicate<Byte> predicate
-                                       ) {
-        super(original);
-        this.predicate = predicate;
-    }
-
-    @Override
-    public final void write(final int b) {
-        if (predicate.test((byte) b)) {
-            super.write(b);
+    public void forEach(final Consumer<Byte> byteConsumer) {
+        if ((len < 0) || (buf.length < (off + len))) {
+            throw new IndexOutOfBoundsException(
+                    String.format("buf.length: %d, off: %d, len: %d", buf.length, off, len));
         }
-    }
-
-    @Override
-    public final void write(final byte[] buf, final int off, final int len) {
-        new ByteBufferSegment(buf, off, len)
-                .forEach(this::write);
+        IntStream.range(off, off + len)
+                .map(i -> buf[i])
+                .forEach(b -> byteConsumer.accept((byte) b));
     }
 }

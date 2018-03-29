@@ -1,13 +1,10 @@
 package net.kemitix.wrapper.printstream;
 
-import net.kemitix.wrapper.Wrapper;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
-import java.util.function.Function;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatNullPointerException;
@@ -19,21 +16,13 @@ import static org.assertj.core.api.Assertions.assertThatNullPointerException;
  */
 public class ByteTransformPrintStreamWrapperTest {
 
-    private OutputStream out;
+    private final OutputStream out = new ByteArrayOutputStream();
 
-    private PrintStream original;
+    private final PrintStream original = new PrintStream(out);
 
-    private Function<Byte, Byte> transformer;
+    private final PrintStream existing = PrintStreamWrapper.filter(original, (String in) -> true);
 
-    private Wrapper<PrintStream> existing;
-
-    @Before
-    public void setUp() {
-        out = new ByteArrayOutputStream();
-        original = new PrintStream(out);
-        transformer = Function.identity();
-        existing = new PassthroughPrintStreamWrapper(original);
-    }
+    private PrintStreamWrapper.ByteTransform transformer = b -> b;
 
     @Test
     public void requireTransformerWhenWrappingPrintStream() {
@@ -42,7 +31,7 @@ public class ByteTransformPrintStreamWrapperTest {
         //then
         assertThatNullPointerException().isThrownBy(() -> {
             //when
-            new ByteTransformPrintStreamWrapper(original, transformer);
+            PrintStreamWrapper.transform(original, transformer);
         })
                                         //and
                                         .withMessage("transformer");
@@ -55,7 +44,7 @@ public class ByteTransformPrintStreamWrapperTest {
         //then
         assertThatNullPointerException().isThrownBy(() -> {
             //when
-            new ByteTransformPrintStreamWrapper(existing, transformer);
+            PrintStreamWrapper.transform(existing, transformer);
         })
                                         //and
                                         .withMessage("transformer");
@@ -66,7 +55,7 @@ public class ByteTransformPrintStreamWrapperTest {
         //given
         transformer = b -> (byte) 'x';
         //when
-        final PrintStream printStream = new ByteTransformPrintStreamWrapper(original, transformer);
+        final PrintStream printStream = PrintStreamWrapper.transform(original, transformer);
         printStream.write((int) 'a');
         //then
         assertThat(out.toString()).isEqualTo("x");
@@ -77,7 +66,7 @@ public class ByteTransformPrintStreamWrapperTest {
         //given
         transformer = b -> (byte) 'y';
         //when
-        final PrintStream wrapper = new ByteTransformPrintStreamWrapper(existing, transformer);
+        final PrintStream wrapper = PrintStreamWrapper.transform(existing, transformer);
         wrapper.write((int) 'a');
         //then
         assertThat(out.toString()).isEqualTo("y");
@@ -87,7 +76,7 @@ public class ByteTransformPrintStreamWrapperTest {
     public void canTransformString() {
         //given
         transformer = b -> (byte) 'z';
-        final PrintStream wrapper = new ByteTransformPrintStreamWrapper(original, transformer);
+        final PrintStream wrapper = PrintStreamWrapper.transform(original, transformer);
         //when
         wrapper.print("in");
         //then

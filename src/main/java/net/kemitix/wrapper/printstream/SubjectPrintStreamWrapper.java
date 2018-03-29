@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Paul Campbell
+ * Copyright (c) 2018 Paul Campbell
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software
  * and associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -21,50 +21,43 @@
 
 package net.kemitix.wrapper.printstream;
 
-import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import net.kemitix.wrapper.Wrapper;
 
 import java.io.PrintStream;
+import java.util.Optional;
 
 /**
- * Wrapper for {@link PrintStream} that Redirects all writes to the supplied PrintStream and ignores any inner
- * wrapper and the core {@link PrintStream}.
+ * A PrintStreamWrapper that contains the PrintStream directly.
  *
  * @author Paul Campbell (pcampbell@kemitix.net)
  */
-public class RedirectPrintStreamWrapper extends PassthroughPrintStreamWrapper {
+@RequiredArgsConstructor
+class SubjectPrintStreamWrapper implements PrintStreamWrapper {
 
-    private final PrintStream redirectTo;
+    private final PrintStream wrapperSubject;
 
-    /**
-     * Constructor to intercept in existing PrintStream.
-     *
-     * @param core       the PrintStream to wrap
-     * @param redirectTo the PrintStream to redirect writes to
-     */
-    public RedirectPrintStreamWrapper(final PrintStream core, @NonNull final PrintStream redirectTo) {
-        super(core);
-        this.redirectTo = redirectTo;
-    }
-
-    /**
-     * Constructor to intercept in existing {@code Wrapper<PrintStream>}.
-     *
-     * @param wrapper    the wrapper to wrap
-     * @param redirectTo the PrintStream to redirect writes to
-     */
-    public RedirectPrintStreamWrapper(final Wrapper<PrintStream> wrapper, @NonNull final PrintStream redirectTo) {
-        super(wrapper);
-        this.redirectTo = redirectTo;
+    @Override
+    public void write(final int b) {
+        wrapperSubject.write(b);
     }
 
     @Override
-    public final void write(final int b) {
-        redirectTo.write(b);
+    public void write(
+            final byte[] buf,
+            final int off,
+            final int len
+    ) {
+        wrapperSubject.write(buf, off, len);
     }
 
     @Override
-    public final void write(final byte[] buf, final int off, final int len) {
-        redirectTo.write(buf, off, len);
+    public PrintStream getWrapperSubject() {
+        return wrapperSubject;
+    }
+
+    @Override
+    public Optional<Wrapper<PrintStream>> getInnerWrapper() {
+        return Optional.empty();
     }
 }

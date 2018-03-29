@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Paul Campbell
+ * Copyright (c) 2018 Paul Campbell
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software
  * and associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -22,7 +22,6 @@
 package net.kemitix.wrapper.printstream;
 
 import lombok.NonNull;
-import net.kemitix.wrapper.Wrapper;
 
 import java.io.PrintStream;
 
@@ -32,7 +31,7 @@ import java.io.PrintStream;
  *
  * @author Paul Campbell (pcampbell@kemitix.net)
  */
-public class CopyPrintStreamWrapper extends PassthroughPrintStreamWrapper {
+class CopyPrintStreamWrapper extends PassthroughPrintStreamWrapper {
 
     private final PrintStream copyTo;
 
@@ -42,19 +41,8 @@ public class CopyPrintStreamWrapper extends PassthroughPrintStreamWrapper {
      * @param core   the PrintStream to wrap
      * @param copyTo the PrintStream to copy to
      */
-    public CopyPrintStreamWrapper(final PrintStream core, @NonNull final PrintStream copyTo) {
+    CopyPrintStreamWrapper(final PrintStream core, @NonNull final PrintStream copyTo) {
         super(core);
-        this.copyTo = copyTo;
-    }
-
-    /**
-     * Constructor to wrap an existing {@code Wrapper<PrintStream>}.
-     *
-     * @param wrapper the wrapper to wrap
-     * @param copyTo  the PrintStream to copy to
-     */
-    public CopyPrintStreamWrapper(final Wrapper<PrintStream> wrapper, @NonNull final PrintStream copyTo) {
-        super(wrapper);
         this.copyTo = copyTo;
     }
 

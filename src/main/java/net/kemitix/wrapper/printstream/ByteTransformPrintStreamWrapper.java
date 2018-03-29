@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Paul Campbell
+ * Copyright (c) 2018 Paul Campbell
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software
  * and associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -22,7 +22,6 @@
 package net.kemitix.wrapper.printstream;
 
 import lombok.NonNull;
-import net.kemitix.wrapper.Wrapper;
 
 import java.io.PrintStream;
 import java.util.function.Function;
@@ -35,7 +34,8 @@ import java.util.function.Function;
  * @author Paul Campbell (pcampbell@kemitix.net)
  * @see StringTransformPrintStreamWrapper
  */
-public class ByteTransformPrintStreamWrapper extends PassthroughPrintStreamWrapper {
+class ByteTransformPrintStreamWrapper
+        extends PassthroughPrintStreamWrapper {
 
     private final Function<Byte, Byte> transformer;
 
@@ -45,33 +45,26 @@ public class ByteTransformPrintStreamWrapper extends PassthroughPrintStreamWrapp
      * @param original    the PrintStream to wrap
      * @param transformer the function to transform the byte
      */
-    public ByteTransformPrintStreamWrapper(
-            final PrintStream original, @NonNull final Function<Byte, Byte> transformer
+    ByteTransformPrintStreamWrapper(
+            final PrintStream original,
+            @NonNull final Function<Byte, Byte> transformer
                                           ) {
         super(original);
         this.transformer = transformer;
     }
 
-    /**
-     * Constructor to wrap an existing {@code Wrapper<PrintStream>}.
-     *
-     * @param wrapper     the wrapper to wrap
-     * @param transformer the function to transform the byte
-     */
-    public ByteTransformPrintStreamWrapper(
-            final Wrapper<PrintStream> wrapper, @NonNull final Function<Byte, Byte> transformer
-                                          ) {
-        super(wrapper);
-        this.transformer = transformer;
-    }
-
     @Override
     public final void write(final int b) {
-        getWrapperDelegate().write(transformer.apply((byte) b));
+        printStreamDelegate().write(transformer.apply((byte) b));
     }
 
     @Override
-    public final void write(final byte[] buf, final int off, final int len) {
-        forEachByteInBuffer(buf, off, len, this::write);
+    public final void write(
+            final byte[] buf,
+            final int off,
+            final int len
+                           ) {
+        new ByteBufferSegment(buf, off, len)
+                .forEach(this::write);
     }
 }
