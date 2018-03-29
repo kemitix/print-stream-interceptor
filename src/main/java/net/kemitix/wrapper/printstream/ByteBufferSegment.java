@@ -45,7 +45,7 @@ class ByteBufferSegment {
      *
      * @param byteConsumer the consumer to process each byte
      */
-    void forEach(final Consumer<Byte> byteConsumer) {
+    public void forEach(final Consumer<Byte> byteConsumer) {
         if ((len < 0) || (buf.length < (off + len))) {
             throw new IndexOutOfBoundsException(
                     String.format("buf.length: %d, off: %d, len: %d", buf.length, off, len));
