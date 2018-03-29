@@ -31,7 +31,7 @@ import java.io.PrintStream;
  *
  * @author Paul Campbell (pcampbell@kemitix.net)
  */
-public class CopyPrintStreamWrapper extends PassthroughPrintStreamWrapper {
+class CopyPrintStreamWrapper extends PassthroughPrintStreamWrapper {
 
     private final PrintStream copyTo;
 
@@ -41,22 +41,8 @@ public class CopyPrintStreamWrapper extends PassthroughPrintStreamWrapper {
      * @param core   the PrintStream to wrap
      * @param copyTo the PrintStream to copy to
      */
-    public CopyPrintStreamWrapper(final PrintStream core, @NonNull final PrintStream copyTo) {
+    CopyPrintStreamWrapper(final PrintStream core, @NonNull final PrintStream copyTo) {
         super(core);
-        this.copyTo = copyTo;
-    }
-
-    /**
-     * Constructor to wrap an existing {@code Wrapper<PrintStream>}.
-     *
-     * @param wrapper the wrapper to wrap
-     * @param copyTo  the PrintStream to copy to
-     */
-    public CopyPrintStreamWrapper(
-            final PrintStreamWrapper wrapper,
-            @NonNull final PrintStream copyTo
-                                 ) {
-        super(wrapper);
         this.copyTo = copyTo;
     }
 

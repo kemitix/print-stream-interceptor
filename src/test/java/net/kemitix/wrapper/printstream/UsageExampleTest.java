@@ -1,16 +1,16 @@
 /**
  * The MIT License (MIT)
- *
+ * <p>
  * Copyright (c) 2018 Paul Campbell
- *
+ * <p>
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
  * documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
  * rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to
  * permit persons to whom the Software is furnished to do so, subject to the following conditions:
- *
+ * <p>
  * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the
  * Software.
- *
+ * <p>
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
  * WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
  * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
@@ -37,7 +37,7 @@ public class UsageExampleTest {
     /**
      * Usage for the following (contrived) example:
      * <pre>
-     * println("...") ===> passthrough ===> copy ===> filter ---> redirect =x=> [coreArray]
+     * println("...") ===> transform ===> copy ===> filter ---> redirect =x=> [coreArray]
      *                                           \==> [copyArray]          \==> [redirectArray]
      * </pre>
      * <ul><li>copyArray receives everything</li> <li>redirectArray receives only what passes the filter</li>
@@ -47,24 +47,22 @@ public class UsageExampleTest {
     public void usage() {
         //given
         final OutputStream coreArray = new ByteArrayOutputStream();
-        final OutputStream redirectArray = new ByteArrayOutputStream();
         final OutputStream copyArray = new ByteArrayOutputStream();
-        final PrintStream printStream = new PassthroughPrintStreamWrapper(
-                (PrintStreamWrapper) new CopyPrintStreamWrapper(
-                        (PrintStreamWrapper) new StringFilterPrintStreamWrapper(
-                                (PrintStreamWrapper) new RedirectPrintStreamWrapper(
-                                        new PrintStream(coreArray),
-                                        new PrintStream(redirectArray)),
-                                o -> o.contains("error")),
-                        new PrintStream(copyArray)));
-        final String message1 = "This is an error message";
-        final String message2 = "This is an ordinary message";
+        final PrintStream core = new PrintStream(coreArray);
+        final PrintStream copy = new PrintStream(copyArray);
+
+        final PrintStream printStream =
+                PrintStreamWrapper.transform(
+                        PrintStreamWrapper.copy(
+                                PrintStreamWrapper.filter(core, (String o) -> o.contains("ERROR")),
+                                copy),
+                        (PrintStreamWrapper.StringTransform) String::toUpperCase);
+
         //when
-        printStream.println(message1);
-        printStream.println(message2);
+        printStream.println("This is an error message");
+        printStream.println("This is an ordinary message");
         //then
-        assertThat(coreArray.toString()).contains("");
-        assertThat(redirectArray.toString()).contains(message1);
-        assertThat(copyArray.toString()).contains(message1, message2);
+        assertThat(coreArray.toString()).contains("THIS IS AN ERROR MESSAGE");
+        assertThat(copyArray.toString()).contains("THIS IS AN ERROR MESSAGE", "THIS IS AN ORDINARY MESSAGE");
     }
 }

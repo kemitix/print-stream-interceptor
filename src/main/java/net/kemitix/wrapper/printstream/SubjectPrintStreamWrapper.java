@@ -38,11 +38,6 @@ class SubjectPrintStreamWrapper implements PrintStreamWrapper {
     private final PrintStream wrapperSubject;
 
     @Override
-    public Optional<PrintStreamWrapper> printStreamWrapperInner() {
-        return Optional.empty();
-    }
-
-    @Override
     public void write(final int b) {
         wrapperSubject.write(b);
     }

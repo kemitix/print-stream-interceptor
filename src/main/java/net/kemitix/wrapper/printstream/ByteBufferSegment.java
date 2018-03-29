@@ -22,47 +22,36 @@
 package net.kemitix.wrapper.printstream;
 
 import lombok.RequiredArgsConstructor;
-import net.kemitix.wrapper.Wrapper;
 
-import java.io.PrintStream;
-import java.util.Optional;
+import java.util.function.Consumer;
+import java.util.stream.IntStream;
 
 /**
- * A PrintStreamWrapper that contains another PrintStreamWrapper.
+ * Represents a segment of a buffer of bytes.
  *
  * @author Paul Campbell (pcampbell@kemitix.net)
  */
 @RequiredArgsConstructor
-class NestedPrintStreamWrapper implements PrintStreamWrapper {
+class ByteBufferSegment {
 
-    private final PrintStreamWrapper wrapper;
+    private final byte[] buf;
 
-    @Override
-    public Optional<PrintStreamWrapper> printStreamWrapperInner() {
-        return Optional.of(wrapper);
-    }
+    private final int off;
 
-    @Override
-    public void write(final int b) {
-        wrapper.write(b);
-    }
+    private final int len;
 
-    @Override
-    public void write(
-            final byte[] buf,
-            final int off,
-            final int len
-    ) {
-        wrapper.write(buf, off, len);
-    }
-
-    @Override
-    public PrintStream getWrapperSubject() {
-        return wrapper.getWrapperSubject();
-    }
-
-    @Override
-    public Optional<Wrapper<PrintStream>> getInnerWrapper() {
-        return Optional.of(wrapper);
+    /**
+     * Scan the buffer, from off to len, and give it to the byteConsumer.
+     *
+     * @param byteConsumer the consumer to process each byte
+     */
+    public void forEach(final Consumer<Byte> byteConsumer) {
+        if ((len < 0) || (buf.length < (off + len))) {
+            throw new IndexOutOfBoundsException(
+                    String.format("buf.length: %d, off: %d, len: %d", buf.length, off, len));
+        }
+        IntStream.range(off, off + len)
+                .map(i -> buf[i])
+                .forEach(b -> byteConsumer.accept((byte) b));
     }
 }

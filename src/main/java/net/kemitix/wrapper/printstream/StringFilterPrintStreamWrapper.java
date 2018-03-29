@@ -37,7 +37,7 @@ import java.util.function.Predicate;
  *
  * @author Paul Campbell (pcampbell@kemitix.net)
  */
-public class StringFilterPrintStreamWrapper extends PassthroughPrintStreamWrapper {
+class StringFilterPrintStreamWrapper extends PassthroughPrintStreamWrapper {
 
     private final Predicate<String> predicate;
 
@@ -47,22 +47,8 @@ public class StringFilterPrintStreamWrapper extends PassthroughPrintStreamWrappe
      * @param core      the PrintStream to wrap
      * @param predicate the predicate to apply to strings
      */
-    public StringFilterPrintStreamWrapper(final PrintStream core, @NonNull final Predicate<String> predicate) {
+    StringFilterPrintStreamWrapper(final PrintStream core, @NonNull final Predicate<String> predicate) {
         super(core);
-        this.predicate = predicate;
-    }
-
-    /**
-     * Constructor to wrap in existing {@code Wrapper<PrintStream>}.
-     *
-     * @param wrapper   the wrapper to wrap
-     * @param predicate the predicate to apply to strings
-     */
-    public StringFilterPrintStreamWrapper(
-            final PrintStreamWrapper wrapper,
-            @NonNull final Predicate<String> predicate
-                                         ) {
-        super(wrapper);
         this.predicate = predicate;
     }
 

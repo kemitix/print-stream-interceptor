@@ -25,6 +25,8 @@ import net.kemitix.wrapper.Wrapper;
 
 import java.io.PrintStream;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 /**
  * {@link Wrapper} for handling {@link PrintStream}.
@@ -37,25 +39,95 @@ import java.util.Optional;
 public interface PrintStreamWrapper extends Wrapper<PrintStream> {
 
     /**
-     * Wrap the {@link PrintStream}.
+     * Create a String filtering PrintStream that will filter using the predicate.
      *
-     * @param subject the PrintStream to wrap
+     * @param printStream the PrintStream to received filtered writes
+     * @param filter the String filter
      *
-     * @return a PrintStreamWrapper containing the subject
+     * @return A String filtering PrintStream
      */
-    static PrintStreamWrapper wrap(final PrintStream subject) {
-        return new SubjectPrintStreamWrapper(subject);
+    static PrintStream filter(
+            final PrintStream printStream,
+            final StringFilter filter) {
+        return new StringFilterPrintStreamWrapper(printStream, filter);
     }
 
     /**
-     * Wrap a {@link PrintStreamWrapper}.
+     * Create a Byte filtering PrintStream that will filter using the predicate.
      *
-     * @param wrapper the PrintStreamWrapper to wrap
+     * @param printStream the PrintStream to received filtered writes
+     * @param filter the Byte filter
      *
-     * @return a PrintStreamWrapper containing the PrintStreamWrapper
+     * @return A Byte filtering PrintStream
      */
-    static PrintStreamWrapper wrap(final PrintStreamWrapper wrapper) {
-        return new NestedPrintStreamWrapper(wrapper);
+    static PrintStream filter(
+            final PrintStream printStream,
+            final ByteFilter filter) {
+        return new ByteFilterPrintStreamWrapper(printStream, filter);
+    }
+
+    /**
+     * Get the wrapped PrintStream, if one exists.
+     *
+     * @param printStream the PrintStream to unwrap
+     *
+     * @return An Optional containing the wrapped PrintStream, or empty if there is none
+     */
+    @SuppressWarnings("unchecked")
+    static Optional<Wrapper<PrintStream>> unwrap(final PrintStream printStream) {
+        if (printStream instanceof PrintStreamWrapper) {
+            return ((Wrapper<PrintStream>) printStream).getInnerWrapper();
+        }
+        return Optional.empty();
+    }
+
+    /**
+     * Creates a PrintStream that copies {@link PrintStream#write(int)} and
+     * {@link PrintStream#write(byte[], int, int)} calls to both the left and the
+     * right PrintStreams.
+     *
+     * @param left the first PrintStream
+     * @param right the second PrintStream
+     *
+     * @return A Copying PrintStream
+     */
+    static PrintStream copy(
+            final PrintStream left,
+            final PrintStream right
+    ) {
+        return new CopyPrintStreamWrapper(left, right);
+    }
+
+    /**
+     * Creates a PrintStream that transforms calls the {@link PrintStream#print(String)} using the transformer before
+     * passing it on to the original.
+     *
+     * @param original the PrintStream to receive the transformed calls
+     * @param transformer the String transformer
+     *
+     * @return A String transforming PrintStream
+     */
+    static PrintStream transform(
+            final PrintStream original,
+            final StringTransform transformer
+    ) {
+        return new StringTransformPrintStreamWrapper(original, transformer);
+    }
+
+    /**
+     * Creates a PrintStream that transforms calls the {@link PrintStream#print(String)} using the transformer before
+     * passing it on to the original.
+     *
+     * @param original the PrintStream to receive the transformed calls
+     * @param transformer the Byte transformer
+     *
+     * @return A Byte transforming PrintStream
+     */
+    static PrintStream transform(
+            final PrintStream original,
+            final ByteTransform transformer
+    ) {
+        return new ByteTransformPrintStreamWrapper(original, transformer);
     }
 
     /**
@@ -64,17 +136,8 @@ public interface PrintStreamWrapper extends Wrapper<PrintStream> {
      * @return The content of the PrintStreamWrapper as a PrintStream
      */
     default PrintStream printStreamDelegate() {
-        return printStreamWrapperInner()
-                .map(PrintStreamWrapper::printStreamDelegate)
-                .orElseGet(this::getWrapperSubject);
+        return getWrapperSubject();
     }
-
-    /**
-     * Finds the contained PrintStreamWrapper if present.
-     *
-     * @return an Optional containing the wrapper PrintStreamWrapper, or empty if there is no inner wrapper.
-     */
-    Optional<PrintStreamWrapper> printStreamWrapperInner();
 
     /**
      * Writes the specified byte to this stream.
@@ -114,4 +177,32 @@ public interface PrintStreamWrapper extends Wrapper<PrintStream> {
             int off,
             int len
     );
+
+    /**
+     * A Function for filtering a String.
+     */
+    @FunctionalInterface
+    interface StringFilter extends Predicate<String> {
+    }
+
+    /**
+     * A Function for filtering a Byte.
+     */
+    @FunctionalInterface
+    interface ByteFilter extends Predicate<Byte> {
+    }
+
+    /**
+     * A Function for transforming one String into another.
+     */
+    @FunctionalInterface
+    interface StringTransform extends Function<String, String> {
+    }
+
+    /**
+     * A Function for transforming one Byte into another.
+     */
+    @FunctionalInterface
+    interface ByteTransform extends Function<Byte, Byte> {
+    }
 }

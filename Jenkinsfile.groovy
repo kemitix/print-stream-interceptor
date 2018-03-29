@@ -3,7 +3,7 @@ final String mvn = "mvn --batch-mode --update-snapshots"
 pipeline {
     agent any
     stages {
-        stage('no SNAPSHOT in master') {
+        stage('master != SNAPSHOT') {
             // checks that the pom version is not a snapshot when the current or target branch is master
             when {
                 expression {
@@ -15,33 +15,24 @@ pipeline {
                 error("Build failed because SNAPSHOT version")
             }
         }
-        stage('Static Code Analysis') {
-            when { expression { findFiles(glob: '**/src/main/java/**/*.java').length > 0 } }
+        stage('Build/Test') {
             steps {
                 withMaven(maven: 'maven', jdk: 'JDK LTS') {
-                    sh "${mvn} compile"
-                    sh "${mvn} checkstyle:checkstyle"
-                    sh "${mvn} pmd:pmd"
-                    pmd canComputeNew: false, defaultEncoding: '', healthy: '', pattern: '', unHealthy: ''
-                }
-            }
-        }
-        stage('Build Java LTS') {
-            steps {
-                withMaven(maven: 'maven', jdk: 'JDK LTS') {
-                    sh "${mvn} clean install"
+                    sh "${mvn} clean compile checkstyle:checkstyle pmd:pmd test"
                     junit '**/target/surefire-reports/*.xml'
-                    jacoco exclusionPattern: '**/*{Test|IT|Main|Application|Immutable}.class'
-                    sh "${mvn} com.gavinmogan:codacy-maven-plugin:coverage " +
+                    sh "${mvn} jacoco:report com.gavinmogan:codacy-maven-plugin:coverage " +
                             "-DcoverageReportFile=target/site/jacoco/jacoco.xml " +
                             "-DprojectToken=`$JENKINS_HOME/codacy/token` " +
                             "-DapiToken=`$JENKINS_HOME/codacy/apitoken` " +
                             "-Dcommit=`git rev-parse HEAD`"
+                    jacoco exclusionPattern: '**/*{Test|IT|Main|Application|Immutable}.class'
+                    pmd canComputeNew: false, defaultEncoding: '', healthy: '', pattern: '', unHealthy: ''
+                    sh "${mvn} install"
                 }
             }
         }
-        stage('SonarQube (develop only)') {
-            when { expression { env.GIT_BRANCH == 'develop' && env.GIT_URL.startsWith('https://') } }
+        stage('SonarQube (github only)') {
+            when { expression { env.GIT_URL.startsWith('https://github.com') } }
             steps {
                 withSonarQubeEnv('sonarqube') {
                     withMaven(maven: 'maven', jdk: 'JDK LTS') {
@@ -56,8 +47,8 @@ pipeline {
                 archiveArtifacts '**/target/*.jar'
             }
         }
-        stage('Deploy') {
-            when { expression { (env.GIT_BRANCH == 'master' && env.GIT_URL.startsWith('https://')) } }
+        stage('Deploy (master on github)') {
+            when { expression { (env.GIT_BRANCH == 'master' && env.GIT_URL.startsWith('https://github.com')) } }
             steps {
                 withMaven(maven: 'maven', jdk: 'JDK LTS') {
                     sh "${mvn} deploy --activate-profiles release -DskipTests=true"

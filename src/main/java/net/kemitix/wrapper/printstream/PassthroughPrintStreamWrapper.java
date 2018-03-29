@@ -25,9 +25,7 @@ import lombok.NonNull;
 import net.kemitix.wrapper.Wrapper;
 
 import java.io.PrintStream;
-import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Consumer;
 
 /**
  * Basic wrapper for {@link PrintStream} that simply passes all writes to the intercepted PrintStream, or to another
@@ -35,7 +33,7 @@ import java.util.function.Consumer;
  *
  * @author Paul Campbell (pcampbell@kemitix.net)
  */
-public class PassthroughPrintStreamWrapper extends PrintStream implements PrintStreamWrapper {
+class PassthroughPrintStreamWrapper extends PrintStream implements PrintStreamWrapper {
 
     private final PrintStreamWrapper wrapper;
 
@@ -44,25 +42,13 @@ public class PassthroughPrintStreamWrapper extends PrintStream implements PrintS
      *
      * @param original the PrintStream to intercept
      */
-    public PassthroughPrintStreamWrapper(final PrintStream original) {
+    PassthroughPrintStreamWrapper(final PrintStream original) {
         super(original);
-        wrapper = PrintStreamWrapper.wrap(original);
+        wrapper = wrap(original);
     }
 
-    /**
-     * Constructor to wrap an existing {@code Wrapper<PrintStream>}.
-     *
-     * @param object the wrapper to wrap
-     */
-    public PassthroughPrintStreamWrapper(final PrintStreamWrapper object) {
-        super(Objects.requireNonNull(object, "wrapper")
-                      .getWrapperSubject());
-        wrapper = PrintStreamWrapper.wrap(object);
-    }
-
-    @Override
-    public final Optional<PrintStreamWrapper> printStreamWrapperInner() {
-        return Optional.of(wrapper);
+    private PrintStreamWrapper wrap(final PrintStream original) {
+        return new SubjectPrintStreamWrapper(original);
     }
 
     /**
@@ -92,31 +78,8 @@ public class PassthroughPrintStreamWrapper extends PrintStream implements PrintS
         wrapper.write(buf, off, len);
     }
 
-    /**
-     * Scan the buffer, from off to len, and give it to the byteConsumer.
-     *
-     * @param buf          the buffer to process
-     * @param off          the offset within the buffer to begin
-     * @param len          the number of bytes to process
-     * @param byteConsumer the consumer to process each byte
-     */
-    protected final void forEachByteInBuffer(
-            final byte[] buf,
-            final int off,
-            final int len,
-            final Consumer<Byte> byteConsumer
-                                            ) {
-        if (len < 0) {
-            throw new IndexOutOfBoundsException(
-                    String.format("buf.length: %d, off: %d, len: %d", buf.length, off, len));
-        }
-        for (int i = 0; i < len; i++) {
-            byteConsumer.accept(buf[off + i]);
-        }
-    }
-
     @Override
-    public final PrintStream getWrapperSubject() {
+    public PrintStream getWrapperSubject() {
         return wrapper.getWrapperSubject();
     }
 

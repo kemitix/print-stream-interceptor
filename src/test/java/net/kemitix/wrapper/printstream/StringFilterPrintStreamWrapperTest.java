@@ -6,7 +6,6 @@ import org.junit.Test;
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
-import java.util.function.Predicate;
 
 import static org.assertj.core.api.Assertions.assertThatNullPointerException;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -20,15 +19,15 @@ public class StringFilterPrintStreamWrapperTest {
 
     private PrintStream original;
 
-    private PrintStreamWrapper existing;
+    private PrintStream existing;
 
-    private Predicate<String> predicate;
+    private PrintStreamWrapper.StringFilter predicate;
 
     @Before
     public void setUp() {
         out = new ByteArrayOutputStream();
         original = new PrintStream(out);
-        existing = new PassthroughPrintStreamWrapper(original);
+        existing = PrintStreamWrapper.transform(original, (String in) -> in);
     }
 
     @Test
@@ -38,7 +37,7 @@ public class StringFilterPrintStreamWrapperTest {
         //then
         assertThatNullPointerException().isThrownBy(() -> {
             //when
-            new StringFilterPrintStreamWrapper(original, predicate);
+            PrintStreamWrapper.filter(original, predicate);
         })
                                         //and
                                         .withMessage("predicate");
@@ -51,7 +50,7 @@ public class StringFilterPrintStreamWrapperTest {
         //then
         assertThatNullPointerException().isThrownBy(() -> {
             //when
-            new StringFilterPrintStreamWrapper(existing, null);
+            PrintStreamWrapper.filter(existing, predicate);
         })
                                         //and
                                         .withMessage("predicate");
@@ -61,7 +60,7 @@ public class StringFilterPrintStreamWrapperTest {
     public void whenPredicateTrueThenFilterPrintsLine() {
         //given
         predicate = o -> true;
-        final PrintStream wrapper = new StringFilterPrintStreamWrapper(original, predicate);
+        final PrintStream wrapper = PrintStreamWrapper.filter(original, predicate);
         //when
         wrapper.println("test");
         //then
@@ -72,7 +71,7 @@ public class StringFilterPrintStreamWrapperTest {
     public void whenPredicateTrueThenFilterPrintsString() {
         //given
         predicate = o -> true;
-        final PrintStream wrapper = new StringFilterPrintStreamWrapper(original, predicate);
+        final PrintStream wrapper = PrintStreamWrapper.filter(original, predicate);
         //when
         wrapper.print("test");
         //then
@@ -83,7 +82,7 @@ public class StringFilterPrintStreamWrapperTest {
     public void whenPredicateFalseThenFilterIgnoresPrint() {
         //given
         predicate = o -> false;
-        final PrintStream wrapper = new StringFilterPrintStreamWrapper(original, predicate);
+        final PrintStream wrapper = PrintStreamWrapper.filter(original, predicate);
         //when
         wrapper.print("test");
         //then
@@ -94,7 +93,7 @@ public class StringFilterPrintStreamWrapperTest {
     public void whenPredicateFalseThenFilterIgnoresPrintln() {
         //given
         predicate = o -> false;
-        final PrintStream wrapper = new StringFilterPrintStreamWrapper(original, predicate);
+        final PrintStream wrapper = PrintStreamWrapper.filter(original, predicate);
         //when
         wrapper.println("test");
         //then
