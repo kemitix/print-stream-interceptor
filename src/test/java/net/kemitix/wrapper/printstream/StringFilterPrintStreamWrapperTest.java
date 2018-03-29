@@ -27,7 +27,7 @@ public class StringFilterPrintStreamWrapperTest {
     public void setUp() {
         out = new ByteArrayOutputStream();
         original = new PrintStream(out);
-        existing = PrintStreamWrapper.passthrough(original);
+        existing = PrintStreamWrapper.transform(original, (String in) -> in);
     }
 
     @Test

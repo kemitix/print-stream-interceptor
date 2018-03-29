@@ -45,7 +45,7 @@ public class PassthroughPrintStreamWrapperTest {
     @Test
     public void canWriteAByteUnmodified() {
         //given
-        final PrintStream wrapper = PrintStreamWrapper.passthrough(original);
+        final PrintStream wrapper = PrintStreamWrapper.filter(original, (String in) -> true);
         //when
         wrapper.write('x');
         //then
@@ -55,7 +55,7 @@ public class PassthroughPrintStreamWrapperTest {
     @Test
     public void canWriteByteArrayUnmodified() throws IOException {
         //given
-        final PrintStream wrapper = PrintStreamWrapper.passthrough(original);
+        final PrintStream wrapper = PrintStreamWrapper.filter(original, (String in) -> true);
         //when
         wrapper.write("test".getBytes());
         //then
@@ -65,7 +65,7 @@ public class PassthroughPrintStreamWrapperTest {
     @Test
     public void canWriteByteArraySubsectionUnmodified() {
         //given
-        final PrintStream wrapper = PrintStreamWrapper.passthrough(original);
+        final PrintStream wrapper = PrintStreamWrapper.filter(original, (String in) -> true);
         //when
         wrapper.write("test".getBytes(), 1, 2);
         //then
@@ -75,7 +75,7 @@ public class PassthroughPrintStreamWrapperTest {
     @Test
     public void writeNullByteArrayWillThrowNullPointerException() {
         //given
-        final PrintStream wrapper = PrintStreamWrapper.passthrough(original);
+        final PrintStream wrapper = PrintStreamWrapper.filter(original, (String in) -> true);
         //then
         assertThatNullPointerException().isThrownBy(
                 //when
@@ -85,7 +85,7 @@ public class PassthroughPrintStreamWrapperTest {
     @Test
     public void writeNullByteArraySubsectionWillThrowNullPointerException() {
         //given
-        final PrintStream wrapper = PrintStreamWrapper.passthrough(original);
+        final PrintStream wrapper = PrintStreamWrapper.filter(original, (String in) -> true);
         //then
         assertThatNullPointerException().isThrownBy(
                 //when
@@ -98,7 +98,7 @@ public class PassthroughPrintStreamWrapperTest {
         final OutputStream copyTo = new ByteArrayOutputStream();
         final PrintStream first = PrintStreamWrapper.copy(
                 original, new PrintStream(copyTo));
-        final PrintStream second = PrintStreamWrapper.passthrough(first);
+        final PrintStream second = PrintStreamWrapper.filter(first, (String in) -> true);
         //when
         second.write('x');
         //then
@@ -112,7 +112,7 @@ public class PassthroughPrintStreamWrapperTest {
         final OutputStream copyTo = new ByteArrayOutputStream();
         final PrintStream first = PrintStreamWrapper.copy(
                 original, new PrintStream(copyTo));
-        final PrintStream second = PrintStreamWrapper.passthrough(first);
+        final PrintStream second = PrintStreamWrapper.filter(first, (String in) -> true);
         //when
         second.print("test");
         //then
@@ -126,7 +126,7 @@ public class PassthroughPrintStreamWrapperTest {
         final byte[] buf = "test".getBytes();
         final int off = 1;
         final int len = 4;
-        final PrintStream wrapper = PrintStreamWrapper.passthrough(original);
+        final PrintStream wrapper = PrintStreamWrapper.filter(original, (String in) -> true);
         //when
         final ThrowableAssert.ThrowingCallable code = () ->
                 wrapper.write(buf, off, len);
@@ -140,7 +140,7 @@ public class PassthroughPrintStreamWrapperTest {
         final byte[] buf = "test".getBytes();
         final int off = -1;
         final int len = 4;
-        final PrintStream wrapper = PrintStreamWrapper.passthrough(original);
+        final PrintStream wrapper = PrintStreamWrapper.filter(original, (String in) -> true);
         //when
         final ThrowableAssert.ThrowingCallable code = () -> wrapper.write(buf, off, len);
         //then
@@ -153,7 +153,7 @@ public class PassthroughPrintStreamWrapperTest {
         final byte[] buf = "test".getBytes();
         final int off = 3;
         final int len = 0;
-        final PrintStream wrapper = PrintStreamWrapper.passthrough(original);
+        final PrintStream wrapper = PrintStreamWrapper.filter(original, (String in) -> true);
         final ThrowableAssert.ThrowingCallable code = () -> {
             //when
             wrapper.write(buf, off, len);
@@ -168,7 +168,7 @@ public class PassthroughPrintStreamWrapperTest {
         final byte[] buf = "test".getBytes();
         final int off = 3;
         final int len = -1;
-        final PrintStream wrapper = PrintStreamWrapper.passthrough(original);
+        final PrintStream wrapper = PrintStreamWrapper.filter(original, (String in) -> true);
         //when
         final ThrowableAssert.ThrowingCallable code = () -> wrapper.write(buf, off, len);
         //then
@@ -181,7 +181,7 @@ public class PassthroughPrintStreamWrapperTest {
         final byte[] buf = "test".getBytes();
         final int off = 4;
         final int len = 1;
-        final PrintStream wrapper = PrintStreamWrapper.passthrough(original);
+        final PrintStream wrapper = PrintStreamWrapper.filter(original, (String in) -> true);
         //when
         final ThrowableAssert.ThrowingCallable code = () -> wrapper.write(buf, off, len);
         //then
@@ -194,7 +194,7 @@ public class PassthroughPrintStreamWrapperTest {
         final byte[] buf = "test".getBytes();
         final int off = 0;
         final int len = 5;
-        final PrintStream wrapper = PrintStreamWrapper.passthrough(original);
+        final PrintStream wrapper = PrintStreamWrapper.filter(original, (String in) -> true);
         //when
         final ThrowableAssert.ThrowingCallable code = () -> wrapper.write(buf, off, len);
         //then
@@ -207,7 +207,7 @@ public class PassthroughPrintStreamWrapperTest {
         final byte[] buf = "test".getBytes();
         final int off = 0;
         final int len = 4;
-        final PrintStream wrapper = PrintStreamWrapper.passthrough(original);
+        final PrintStream wrapper = PrintStreamWrapper.filter(original, (String in) -> true);
         //when
         wrapper.write(buf, off, len);
         //then
@@ -218,8 +218,7 @@ public class PassthroughPrintStreamWrapperTest {
     public void canGetInnerWrapper() {
         //given
         final PrintStream printStream = new PrintStream(new ByteArrayOutputStream());
-        final PrintStream wrapper =
-                PrintStreamWrapper.passthrough(printStream);
+        final PrintStream wrapper = PrintStreamWrapper.filter(printStream, (String in) -> true);
         //when
         final Optional<Wrapper<PrintStream>> result = PrintStreamWrapper.innerWrapper(wrapper);
         //then

@@ -60,10 +60,6 @@ public interface PrintStreamWrapper extends Wrapper<PrintStream> {
         return new NestedPrintStreamWrapper(wrapper);
     }
 
-    static PrintStream passthrough(final PrintStream original) {
-        return new PassthroughPrintStreamWrapper(original);
-    }
-
     static PrintStream filter(
             final PrintStream printStream,
             final StringFilter filter) {

@@ -30,7 +30,7 @@ public class ByteFilterPrintStreamWrapperTest {
     public void setUp() {
         out = new ByteArrayOutputStream();
         original = new PrintStream(out);
-        existing = PrintStreamWrapper.passthrough(original);
+        existing = PrintStreamWrapper.filter(original, (String in) -> true);
     }
 
     @Test

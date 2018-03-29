@@ -24,7 +24,7 @@ public class CopyPrintStreamWrapperTest {
 
     private final PrintStream original = new PrintStream(out);
 
-    private final PrintStream existing = PrintStreamWrapper.passthrough(original);
+    private final PrintStream existing = PrintStreamWrapper.filter(original, (String in) -> true);
 
     private PrintStream copyTo = new PrintStream(copy);
 

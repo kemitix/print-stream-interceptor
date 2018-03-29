@@ -20,7 +20,7 @@ public class ByteTransformPrintStreamWrapperTest {
 
     private final PrintStream original = new PrintStream(out);
 
-    private final PrintStream existing = PrintStreamWrapper.passthrough(original);
+    private final PrintStream existing = PrintStreamWrapper.filter(original, (String in) -> true);
 
     private PrintStreamWrapper.ByteTransform transformer = b -> b;
 
