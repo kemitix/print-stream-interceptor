@@ -25,7 +25,6 @@ import lombok.NonNull;
 import net.kemitix.wrapper.Wrapper;
 
 import java.io.PrintStream;
-import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -46,17 +45,6 @@ class PassthroughPrintStreamWrapper extends PrintStream implements PrintStreamWr
     PassthroughPrintStreamWrapper(final PrintStream original) {
         super(original);
         wrapper = PrintStreamWrapper.wrap(original);
-    }
-
-    /**
-     * Constructor to wrap an existing {@code Wrapper<PrintStream>}.
-     *
-     * @param object the wrapper to wrap
-     */
-    PassthroughPrintStreamWrapper(final PrintStreamWrapper object) {
-        super(Objects.requireNonNull(object, "wrapper")
-                      .getWrapperSubject());
-        wrapper = PrintStreamWrapper.wrap(object);
     }
 
     @Override
