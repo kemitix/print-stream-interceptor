@@ -51,11 +51,6 @@ class PassthroughPrintStreamWrapper extends PrintStream implements PrintStreamWr
         return new SubjectPrintStreamWrapper(original);
     }
 
-    @Override
-    public final Optional<PrintStreamWrapper> printStreamWrapperInner() {
-        return Optional.of(wrapper);
-    }
-
     /**
      * Write the byte to the wrapped PrintStream or PrintStreamWrapper.
      *
@@ -81,6 +76,11 @@ class PassthroughPrintStreamWrapper extends PrintStream implements PrintStreamWr
             final int len
                      ) {
         wrapper.write(buf, off, len);
+    }
+
+    @Override
+    public PrintStream getWrapperSubject() {
+        return wrapper.getWrapperSubject();
     }
 
     @Override

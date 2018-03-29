@@ -38,20 +38,43 @@ import java.util.function.Predicate;
  */
 public interface PrintStreamWrapper extends Wrapper<PrintStream> {
 
+    /**
+     * Create a String filtering PrintStream that will filter using the predicate.
+     *
+     * @param printStream the PrintStream to received filtered writes
+     * @param filter the String filter
+     *
+     * @return A String filtering PrintStream
+     */
     static PrintStream filter(
             final PrintStream printStream,
             final StringFilter filter) {
         return new StringFilterPrintStreamWrapper(printStream, filter);
     }
 
+    /**
+     * Create a Byte filtering PrintStream that will filter using the predicate.
+     *
+     * @param printStream the PrintStream to received filtered writes
+     * @param filter the Byte filter
+     *
+     * @return A Byte filtering PrintStream
+     */
     static PrintStream filter(
             final PrintStream printStream,
             final ByteFilter filter) {
         return new ByteFilterPrintStreamWrapper(printStream, filter);
     }
 
+    /**
+     * Get the wrapped PrintStream, if one exists.
+     *
+     * @param printStream the PrintStream to unwrap
+     *
+     * @return An Optional containing the wrapped PrintStream, or empty if there is none
+     */
     @SuppressWarnings("unchecked")
-    static Optional<Wrapper<PrintStream>> innerWrapper(final PrintStream printStream) {
+    static Optional<Wrapper<PrintStream>> unwrap(final PrintStream printStream) {
         if (printStream instanceof PrintStreamWrapper) {
             return ((Wrapper<PrintStream>) printStream).getInnerWrapper();
         }
@@ -66,34 +89,45 @@ public interface PrintStreamWrapper extends Wrapper<PrintStream> {
      * @param left the first PrintStream
      * @param right the second PrintStream
      *
-     * @return a PrintStream
+     * @return A Copying PrintStream
      */
     static PrintStream copy(
             final PrintStream left,
             final PrintStream right
-                           ) {
+    ) {
         return new CopyPrintStreamWrapper(left, right);
     }
 
+    /**
+     * Creates a PrintStream that transforms calls the {@link PrintStream#print(String)} using the transformer before
+     * passing it on to the original.
+     *
+     * @param original the PrintStream to receive the transformed calls
+     * @param transformer the String transformer
+     *
+     * @return A String transforming PrintStream
+     */
     static PrintStream transform(
             final PrintStream original,
             final StringTransform transformer
-                                ) {
+    ) {
         return new StringTransformPrintStreamWrapper(original, transformer);
     }
 
+    /**
+     * Creates a PrintStream that transforms calls the {@link PrintStream#print(String)} using the transformer before
+     * passing it on to the original.
+     *
+     * @param original the PrintStream to receive the transformed calls
+     * @param transformer the Byte transformer
+     *
+     * @return A Byte transforming PrintStream
+     */
     static PrintStream transform(
             final PrintStream original,
             final ByteTransform transformer
-                                ) {
+    ) {
         return new ByteTransformPrintStreamWrapper(original, transformer);
-    }
-
-    @Override
-    default PrintStream getWrapperSubject() {
-        return printStreamWrapperInner()
-                .map(PrintStreamWrapper::printStreamDelegate)
-                .orElseGet(this::getWrapperSubject);
     }
 
     /**
@@ -104,13 +138,6 @@ public interface PrintStreamWrapper extends Wrapper<PrintStream> {
     default PrintStream printStreamDelegate() {
         return getWrapperSubject();
     }
-
-    /**
-     * Finds the contained PrintStreamWrapper if present.
-     *
-     * @return an Optional containing the wrapper PrintStreamWrapper, or empty if there is no inner wrapper.
-     */
-    Optional<PrintStreamWrapper> printStreamWrapperInner();
 
     /**
      * Writes the specified byte to this stream.
@@ -151,9 +178,31 @@ public interface PrintStreamWrapper extends Wrapper<PrintStream> {
             int len
     );
 
-    interface StringFilter extends Predicate<String> {}
-    interface ByteFilter extends Predicate<Byte> {}
+    /**
+     * A Function for filtering a String.
+     */
+    @FunctionalInterface
+    interface StringFilter extends Predicate<String> {
+    }
 
-    interface StringTransform extends Function<String, String>{}
-    interface ByteTransform extends Function<Byte, Byte>{}
+    /**
+     * A Function for filtering a Byte.
+     */
+    @FunctionalInterface
+    interface ByteFilter extends Predicate<Byte> {
+    }
+
+    /**
+     * A Function for transforming one String into another.
+     */
+    @FunctionalInterface
+    interface StringTransform extends Function<String, String> {
+    }
+
+    /**
+     * A Function for transforming one Byte into another.
+     */
+    @FunctionalInterface
+    interface ByteTransform extends Function<Byte, Byte> {
+    }
 }

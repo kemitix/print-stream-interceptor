@@ -220,7 +220,7 @@ public class PassthroughPrintStreamWrapperTest {
         final PrintStream printStream = new PrintStream(new ByteArrayOutputStream());
         final PrintStream wrapper = PrintStreamWrapper.filter(printStream, (String in) -> true);
         //when
-        final Optional<Wrapper<PrintStream>> result = PrintStreamWrapper.innerWrapper(wrapper);
+        final Optional<Wrapper<PrintStream>> result = PrintStreamWrapper.unwrap(wrapper);
         //then
         assertThat(result).isNotEmpty();
         result.ifPresent(printStreamWrapper -> {
@@ -235,7 +235,7 @@ public class PassthroughPrintStreamWrapperTest {
         //given
         final PrintStream printStream = new PrintStream(new ByteArrayOutputStream());
         //when
-        final Optional<Wrapper<PrintStream>> result = PrintStreamWrapper.innerWrapper(printStream);
+        final Optional<Wrapper<PrintStream>> result = PrintStreamWrapper.unwrap(printStream);
         //then
         assertThat(result).isEmpty();
     }
