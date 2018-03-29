@@ -17,19 +17,26 @@ pipeline {
         }
         stage('Build/Test') {
             steps {
+                withMaven(maven: 'maven', jdk: 'JDK LTS') {
+                    sh "${mvn} clean compile checkstyle:checkstyle pmd:pmd test"
+                    junit '**/target/surefire-reports/*.xml'
+                    sh "${mvn} jacoco:report com.gavinmogan:codacy-maven-plugin:coverage " +
+                            "-DcoverageReportFile=target/site/jacoco/jacoco.xml " +
+                            "-DprojectToken=`$JENKINS_HOME/codacy/token` " +
+                            "-DapiToken=`$JENKINS_HOME/codacy/apitoken` " +
+                            "-Dcommit=`git rev-parse HEAD`"
+                    jacoco exclusionPattern: '**/*{Test|IT|Main|Application|Immutable}.class'
+                    pmd canComputeNew: false, defaultEncoding: '', healthy: '', pattern: '', unHealthy: ''
+                    sh "${mvn} install"
+                }
+            }
+        }
+        stage('SonarQube (github only)') {
+            when { expression { env.GIT_URL.startsWith('https://github.com') } }
+            steps {
                 withSonarQubeEnv('sonarqube') {
                     withMaven(maven: 'maven', jdk: 'JDK LTS') {
-                        sh "${mvn} clean compile checkstyle:checkstyle pmd:pmd test"
-                        junit '**/target/surefire-reports/*.xml'
-                        sh "${mvn} jacoco:report com.gavinmogan:codacy-maven-plugin:coverage " +
-                                "-DcoverageReportFile=target/site/jacoco/jacoco.xml " +
-                                "-DprojectToken=`$JENKINS_HOME/codacy/token` " +
-                                "-DapiToken=`$JENKINS_HOME/codacy/apitoken` " +
-                                "-Dcommit=`git rev-parse HEAD`"
-                        jacoco exclusionPattern: '**/*{Test|IT|Main|Application|Immutable}.class'
-                        pmd canComputeNew: false, defaultEncoding: '', healthy: '', pattern: '', unHealthy: ''
                         sh "${mvn} org.sonarsource.scanner.maven:sonar-maven-plugin:3.4.0.905:sonar"
-                        sh "${mvn} install"
                     }
                 }
             }
