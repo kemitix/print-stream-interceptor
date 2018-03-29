@@ -80,11 +80,6 @@ class PassthroughPrintStreamWrapper extends PrintStream implements PrintStreamWr
     }
 
     @Override
-    public final PrintStream getWrapperSubject() {
-        return wrapper.getWrapperSubject();
-    }
-
-    @Override
     public final Optional<Wrapper<PrintStream>> getInnerWrapper() {
         return Optional.of(wrapper);
     }

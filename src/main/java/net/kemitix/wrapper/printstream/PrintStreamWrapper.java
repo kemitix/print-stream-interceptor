@@ -115,15 +115,20 @@ public interface PrintStreamWrapper extends Wrapper<PrintStream> {
         return new ByteTransformPrintStreamWrapper(original, transformer);
     }
 
+    @Override
+    default PrintStream getWrapperSubject() {
+        return printStreamWrapperInner()
+                .map(PrintStreamWrapper::printStreamDelegate)
+                .orElseGet(this::getWrapperSubject);
+    }
+
     /**
      * The content of the PrintStreamWrapper as a PrintStream.
      *
      * @return The content of the PrintStreamWrapper as a PrintStream
      */
     default PrintStream printStreamDelegate() {
-        return printStreamWrapperInner()
-                .map(PrintStreamWrapper::printStreamDelegate)
-                .orElseGet(this::getWrapperSubject);
+        return getWrapperSubject();
     }
 
     /**
