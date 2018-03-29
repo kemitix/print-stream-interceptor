@@ -38,28 +38,6 @@ import java.util.function.Predicate;
  */
 public interface PrintStreamWrapper extends Wrapper<PrintStream> {
 
-    /**
-     * Wrap the {@link PrintStream}.
-     *
-     * @param subject the PrintStream to wrap
-     *
-     * @return a PrintStreamWrapper containing the subject
-     */
-    static PrintStreamWrapper wrap(final PrintStream subject) {
-        return new SubjectPrintStreamWrapper(subject);
-    }
-
-    /**
-     * Wrap a {@link PrintStreamWrapper}.
-     *
-     * @param wrapper the PrintStreamWrapper to wrap
-     *
-     * @return a PrintStreamWrapper containing the PrintStreamWrapper
-     */
-    static PrintStreamWrapper wrap(final PrintStreamWrapper wrapper) {
-        return new NestedPrintStreamWrapper(wrapper);
-    }
-
     static PrintStream filter(
             final PrintStream printStream,
             final StringFilter filter) {

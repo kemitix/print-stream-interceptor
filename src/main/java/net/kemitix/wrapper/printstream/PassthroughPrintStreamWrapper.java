@@ -44,7 +44,11 @@ class PassthroughPrintStreamWrapper extends PrintStream implements PrintStreamWr
      */
     PassthroughPrintStreamWrapper(final PrintStream original) {
         super(original);
-        wrapper = PrintStreamWrapper.wrap(original);
+        wrapper = wrap(original);
+    }
+
+    private PrintStreamWrapper wrap(final PrintStream original) {
+        return new SubjectPrintStreamWrapper(original);
     }
 
     @Override
