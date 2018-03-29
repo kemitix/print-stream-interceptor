@@ -8,7 +8,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
-public class BytePrintStreamWrapperTest {
+public class ByteBufferSegmentTest {
 
     @Test
     public void canScanFromBufferIntoConsumer() {
@@ -16,7 +16,8 @@ public class BytePrintStreamWrapperTest {
         final byte[] bytes = {'a', 'b', 'c', 'd'};
         final List<Byte> capture = new ArrayList<>();
         //when
-        BytePrintStreamWrapper.forEachByteInBuffer(bytes, 1, 2, capture::add);
+        new ByteBufferSegment(bytes, 1, 2)
+                .forEach(capture::add);
         //then
         assertThat(capture).containsExactly((byte) 'b', (byte) 'c');
     }
@@ -25,9 +26,8 @@ public class BytePrintStreamWrapperTest {
     public void requiredLengthGreaterThenOrEqualToZero() {
         assertThatExceptionOfType(IndexOutOfBoundsException.class)
                 .isThrownBy(() -> {
-                    BytePrintStreamWrapper.forEachByteInBuffer(
-                            new byte[0], 0, -1, b -> {
-                    });
+                    new ByteBufferSegment(new byte[0], 0, -1)
+                            .forEach(b -> {});
                 });
     }
 
@@ -38,9 +38,8 @@ public class BytePrintStreamWrapperTest {
         //then
         assertThatExceptionOfType(IndexOutOfBoundsException.class)
                 .isThrownBy(() -> {
-                    BytePrintStreamWrapper.forEachByteInBuffer(
-                            bytes, 6, 2, b -> {
-                            });
+                    new ByteBufferSegment(bytes, 6, 2)
+                            .forEach(b -> {});
                 });
     }
 }

@@ -35,8 +35,7 @@ import java.util.function.Function;
  * @see StringTransformPrintStreamWrapper
  */
 class ByteTransformPrintStreamWrapper
-        extends PassthroughPrintStreamWrapper
-        implements BytePrintStreamWrapper {
+        extends PassthroughPrintStreamWrapper {
 
     private final Function<Byte, Byte> transformer;
 
@@ -65,6 +64,7 @@ class ByteTransformPrintStreamWrapper
             final int off,
             final int len
                            ) {
-        BytePrintStreamWrapper.forEachByteInBuffer(buf, off, len, this::write);
+        new ByteBufferSegment(buf, off, len)
+                .forEach(this::write);
     }
 }
