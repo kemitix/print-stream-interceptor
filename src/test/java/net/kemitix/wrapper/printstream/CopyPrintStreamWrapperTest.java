@@ -59,7 +59,7 @@ public class CopyPrintStreamWrapperTest {
                 PrintStreamWrapper.copy(original, copyTo);
         //then
         assertThatNullPointerException().isThrownBy(code)
-                                        .withMessage("copyTo");
+                                        .withMessageContaining("copyTo");
     }
 
     @Test
