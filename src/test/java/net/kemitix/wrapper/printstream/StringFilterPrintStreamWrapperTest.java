@@ -40,7 +40,7 @@ public class StringFilterPrintStreamWrapperTest {
             PrintStreamWrapper.filter(original, predicate);
         })
                                         //and
-                                        .withMessage("predicate");
+                                        .withMessageContaining("predicate");
     }
 
     @Test
@@ -53,7 +53,7 @@ public class StringFilterPrintStreamWrapperTest {
             PrintStreamWrapper.filter(existing, predicate);
         })
                                         //and
-                                        .withMessage("predicate");
+                                        .withMessageContaining("predicate");
     }
 
     @Test
@@ -64,7 +64,7 @@ public class StringFilterPrintStreamWrapperTest {
         //when
         wrapper.println("test");
         //then
-        assertThat(out.toString()).isEqualTo("test\n");
+        assertThat(out.toString()).isEqualTo("test" + System.lineSeparator());
     }
 
     @Test
