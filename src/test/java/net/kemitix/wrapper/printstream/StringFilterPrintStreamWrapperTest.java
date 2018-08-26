@@ -64,7 +64,7 @@ public class StringFilterPrintStreamWrapperTest {
         //when
         wrapper.println("test");
         //then
-        assertThat(out.toString()).isEqualTo("test\n");
+        assertThat(out.toString()).isEqualTo("test" + System.lineSeparator());
     }
 
     @Test

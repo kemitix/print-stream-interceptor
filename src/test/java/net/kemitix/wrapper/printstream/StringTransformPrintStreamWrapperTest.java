@@ -67,13 +67,12 @@ public class StringTransformPrintStreamWrapperTest {
     public void canTransformStringWhenWrappingWrapper() {
         //given
         final String in = "message in";
-        final String expected = "message OUT\n";
         final PrintStreamWrapper.StringTransform transform =
                 s -> s.replace("in", "OUT");
         //when
         final PrintStream printStream = PrintStreamWrapper.transform(existing, transform);
         printStream.println(in);
         //then
-        assertThat(out.toString()).isEqualTo(expected);
+        assertThat(out.toString()).isEqualTo("message OUT" + System.lineSeparator());
     }
 }
