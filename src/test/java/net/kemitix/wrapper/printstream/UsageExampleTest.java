@@ -28,7 +28,7 @@ import java.io.PrintStream;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Test demonstration usage for README.md.
+ * Test demonstration usage for README.org.
  *
  * @author Paul Campbell (pcampbell@kemitix.net)
  */
