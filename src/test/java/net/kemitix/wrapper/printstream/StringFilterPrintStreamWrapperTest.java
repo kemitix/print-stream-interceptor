@@ -40,7 +40,7 @@ public class StringFilterPrintStreamWrapperTest {
             PrintStreamWrapper.filter(original, predicate);
         })
                                         //and
-                                        .withMessage("predicate");
+                                        .withMessageContaining("predicate");
     }
 
     @Test
@@ -53,7 +53,7 @@ public class StringFilterPrintStreamWrapperTest {
             PrintStreamWrapper.filter(existing, predicate);
         })
                                         //and
-                                        .withMessage("predicate");
+                                        .withMessageContaining("predicate");
     }
 
     @Test

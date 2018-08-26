@@ -34,7 +34,7 @@ public class ByteTransformPrintStreamWrapperTest {
             PrintStreamWrapper.transform(original, transformer);
         })
                                         //and
-                                        .withMessage("transformer");
+                                        .withMessageContaining("transformer");
     }
 
     @Test
@@ -47,7 +47,7 @@ public class ByteTransformPrintStreamWrapperTest {
             PrintStreamWrapper.transform(existing, transformer);
         })
                                         //and
-                                        .withMessage("transformer");
+                                        .withMessageContaining("transformer");
     }
 
     @Test

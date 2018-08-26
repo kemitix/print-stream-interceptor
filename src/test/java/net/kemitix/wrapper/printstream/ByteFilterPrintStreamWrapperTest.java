@@ -43,7 +43,7 @@ public class ByteFilterPrintStreamWrapperTest {
             PrintStreamWrapper.filter(original, predicate);
         })
                                         //and
-                                        .withMessage("predicate");
+                                        .withMessageContaining("predicate");
     }
 
     @Test
@@ -56,7 +56,7 @@ public class ByteFilterPrintStreamWrapperTest {
             PrintStreamWrapper.filter(existing, predicate);
         })
                                         //and
-                                        .withMessage("predicate");
+                                        .withMessageContaining("predicate");
     }
 
     @Test

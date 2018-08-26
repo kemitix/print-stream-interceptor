@@ -36,7 +36,7 @@ public class CopyPrintStreamWrapperTest {
         //then
         assertThatNullPointerException()
                 .isThrownBy(code)
-                .withMessage("Null output stream");
+                .withMessageContaining("Null output stream");
     }
 
     @Test
@@ -47,7 +47,7 @@ public class CopyPrintStreamWrapperTest {
         //then
         assertThatNullPointerException()
                 .isThrownBy(code)
-                .withMessage("copyTo");
+                .withMessageContaining("copyTo");
     }
 
     @Test
@@ -71,7 +71,7 @@ public class CopyPrintStreamWrapperTest {
                 PrintStreamWrapper.copy(existing, copyTo);
         //then
         assertThatNullPointerException().isThrownBy(code)
-                                        .withMessage("copyTo");
+                                        .withMessageContaining("copyTo");
     }
 
     @Test
