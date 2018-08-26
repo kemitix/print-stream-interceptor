@@ -2,23 +2,23 @@
 
 ** Wrappers for `PrintStream` with copy, filter and transform implementations.
 
-  [[https://oss.sonatype.org/content/repositories/releases/net/kemitix/mon][file:https://img.shields.io/nexus/r/https/oss.sonatype.org/net.kemitix/print-stream-wrapper.svg?style=for-the-badge]]
-  [[https://search.maven.org/#search%7Cga%7C1%7Cg%3A%22net.kemitix%22%20AND%20a%3A%22mon%22][file:https://img.shields.io/maven-central/v/net.kemitix/print-stream-wrapper.svg?style=for-the-badge]]
+  [[https://oss.sonatype.org/content/repositories/releases/net/kemitix/print-stream-wrapper][file:https://img.shields.io/nexus/r/https/oss.sonatype.org/net.kemitix/print-stream-wrapper.svg?style=for-the-badge]]
+  [[https://search.maven.org/#search%7Cga%7C1%7Cg%3A%22net.kemitix%22%20AND%20a%3A%22print-stream-wrapper%22][file:https://img.shields.io/maven-central/v/net.kemitix/print-stream-wrapper.svg?style=for-the-badge]]
 
-  [[https://sonarcloud.io/dashboard?id=net.kemitix%3Amon][file:https://img.shields.io/sonar/https/sonarcloud.io/net.kemitix%3Aprint-stream-wrapper/coverage.svg?style=for-the-badge#.svg]]
-  [[https://sonarcloud.io/dashboard?id=net.kemitix%3Amon][file:https://img.shields.io/sonar/https/sonarcloud.io/net.kemitix%3Aprint-stream-wrapper/tech_debt.svg?style=for-the-badge#.svg]]
-  [[https://sonarcloud.io/dashboard?id=net.kemitix%3Amon][file:https://sonarcloud.io/api/project_badges/measure?project=net.kemitix%3Aprint-stream-wrapper&metric=sqale_rating#.svg]]
-  [[https://sonarcloud.io/dashboard?id=net.kemitix%3Amon][file:https://sonarcloud.io/api/project_badges/measure?project=net.kemitix%3Aprint-stream-wrapper&metric=alert_status#.svg]]
-  [[https://sonarcloud.io/dashboard?id=net.kemitix%3Amon][file:https://sonarcloud.io/api/project_badges/measure?project=net.kemitix%3Aprint-stream-wrapper&metric=reliability_rating#.svg]]
-  [[https://sonarcloud.io/dashboard?id=net.kemitix%3Amon][file:https://sonarcloud.io/api/project_badges/measure?project=net.kemitix%3Aprint-stream-wrapper&metric=security_rating#.svg]]
-  [[https://sonarcloud.io/dashboard?id=net.kemitix%3Amon][file:https://sonarcloud.io/api/project_badges/measure?project=net.kemitix%3Aprint-stream-wrapper&metric=sqale_index#.svg]]
-  [[https://sonarcloud.io/dashboard?id=net.kemitix%3Amon][file:https://sonarcloud.io/api/project_badges/measure?project=net.kemitix%3Aprint-stream-wrapper&metric=vulnerabilities#.svg]]
-  [[https://sonarcloud.io/dashboard?id=net.kemitix%3Amon][file:https://sonarcloud.io/api/project_badges/measure?project=net.kemitix%3Aprint-stream-wrapper&metric=bugs#.svg]]
-  [[https://sonarcloud.io/dashboard?id=net.kemitix%3Amon][file:https://sonarcloud.io/api/project_badges/measure?project=net.kemitix%3Aprint-stream-wrapper&metric=code_smells#.svg]]
-  [[https://sonarcloud.io/dashboard?id=net.kemitix%3Amon][file:https://sonarcloud.io/api/project_badges/measure?project=net.kemitix%3Aprint-stream-wrapper&metric=ncloc#.svg]]
+  [[https://sonarcloud.io/dashboard?id=net.kemitix%3Aprint-stream-wrapper][file:https://img.shields.io/sonar/https/sonarcloud.io/net.kemitix%3Aprint-stream-wrapper/coverage.svg?style=for-the-badge#.svg]]
+  [[https://sonarcloud.io/dashboard?id=net.kemitix%3Aprint-stream-wrapper][file:https://img.shields.io/sonar/https/sonarcloud.io/net.kemitix%3Aprint-stream-wrapper/tech_debt.svg?style=for-the-badge#.svg]]
+  [[https://sonarcloud.io/dashboard?id=net.kemitix%3Aprint-stream-wrapper][file:https://sonarcloud.io/api/project_badges/measure?project=net.kemitix%3Aprint-stream-wrapper&metric=sqale_rating#.svg]]
+  [[https://sonarcloud.io/dashboard?id=net.kemitix%3Aprint-stream-wrapper][file:https://sonarcloud.io/api/project_badges/measure?project=net.kemitix%3Aprint-stream-wrapper&metric=alert_status#.svg]]
+  [[https://sonarcloud.io/dashboard?id=net.kemitix%3Aprint-stream-wrapper][file:https://sonarcloud.io/api/project_badges/measure?project=net.kemitix%3Aprint-stream-wrapper&metric=reliability_rating#.svg]]
+  [[https://sonarcloud.io/dashboard?id=net.kemitix%3Aprint-stream-wrapper][file:https://sonarcloud.io/api/project_badges/measure?project=net.kemitix%3Aprint-stream-wrapper&metric=security_rating#.svg]]
+  [[https://sonarcloud.io/dashboard?id=net.kemitix%3Aprint-stream-wrapper][file:https://sonarcloud.io/api/project_badges/measure?project=net.kemitix%3Aprint-stream-wrapper&metric=sqale_index#.svg]]
+  [[https://sonarcloud.io/dashboard?id=net.kemitix%3Aprint-stream-wrapper][file:https://sonarcloud.io/api/project_badges/measure?project=net.kemitix%3Aprint-stream-wrapper&metric=vulnerabilities#.svg]]
+  [[https://sonarcloud.io/dashboard?id=net.kemitix%3Aprint-stream-wrapper][file:https://sonarcloud.io/api/project_badges/measure?project=net.kemitix%3Aprint-stream-wrapper&metric=bugs#.svg]]
+  [[https://sonarcloud.io/dashboard?id=net.kemitix%3Aprint-stream-wrapper][file:https://sonarcloud.io/api/project_badges/measure?project=net.kemitix%3Aprint-stream-wrapper&metric=code_smells#.svg]]
+  [[https://sonarcloud.io/dashboard?id=net.kemitix%3Aprint-stream-wrapper][file:https://sonarcloud.io/api/project_badges/measure?project=net.kemitix%3Aprint-stream-wrapper&metric=ncloc#.svg]]
 
-  [[https://app.codacy.com/project/kemitix/mon/dashboard][file:https://img.shields.io/codacy/grade/573c34eda55e429aa261e02e30cbaa81.svg?style=for-the-badge]]
-  [[http://i.jpeek.org/net.kemitix/mon/index.html][file:http://i.jpeek.org/net.kemitix/print-stream-wrapper/badge.svg]]
+  [[https://app.codacy.com/project/kemitix/print-stream-wrapper/dashboard][file:https://img.shields.io/codacy/grade/573c34eda55e429aa261e02e30cbaa81.svg?style=for-the-badge]]
+  [[http://i.jpeek.org/net.kemitix/print-stream-wrapper/index.html][file:http://i.jpeek.org/net.kemitix/print-stream-wrapper/badge.svg]]
 
 ** Usage
 
