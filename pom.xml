@@ -18,7 +18,7 @@
         <wrapper.version>0.4.0</wrapper.version>
         <lombok.version>1.18.2</lombok.version>
         <junit.version>4.12</junit.version>
-        <assertj.version>3.11.0</assertj.version>
+        <assertj.version>3.11.1</assertj.version>
         <tiles-maven-plugin.version>2.12</tiles-maven-plugin.version>
         <kemitix-tiles.version>0.8.1</kemitix-tiles.version>
         <kemitix-checkstyle.version>4.0.1</kemitix-checkstyle.version>
