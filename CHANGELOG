@@ -9,6 +9,7 @@ CHANGELOG
 * Bump assertj-core from 3.9.1 to 3.11.1 (#26)
 * Bump lombok from 1.16.20 to 1.18.2 (#24)
 * Bump kemitix-maven-tiles from 0.8.1 to 1.3.1 (#27)
+* [jenkins] compatibility build with Java 11 (#27)
 
 0.4.0
 -----
