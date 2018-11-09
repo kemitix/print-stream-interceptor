@@ -10,7 +10,7 @@
         <relativePath/>
     </parent>
     <artifactId>print-stream-wrapper</artifactId>
-    <version>0.4.0</version>
+    <version>DEV-SNAPSHOT</version>
     <name>PrintStream Wrapper</name>
     <description>Wrappers for PrintStream with copy, redirect, filter and passthrough implementations.</description>
     <properties>
