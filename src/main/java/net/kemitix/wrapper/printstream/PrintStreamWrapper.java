@@ -46,7 +46,7 @@ public interface PrintStreamWrapper extends Wrapper<PrintStream> {
      *
      * @return A String filtering PrintStream
      */
-    static PrintStream filter(
+    public static PrintStream filter(
             final PrintStream printStream,
             final StringFilter filter) {
         return new StringFilterPrintStreamWrapper(printStream, filter);
@@ -60,7 +60,7 @@ public interface PrintStreamWrapper extends Wrapper<PrintStream> {
      *
      * @return A Byte filtering PrintStream
      */
-    static PrintStream filter(
+    public static PrintStream filter(
             final PrintStream printStream,
             final ByteFilter filter) {
         return new ByteFilterPrintStreamWrapper(printStream, filter);
@@ -74,7 +74,7 @@ public interface PrintStreamWrapper extends Wrapper<PrintStream> {
      * @return An Optional containing the wrapped PrintStream, or empty if there is none
      */
     @SuppressWarnings("unchecked")
-    static Optional<Wrapper<PrintStream>> unwrap(final PrintStream printStream) {
+    public static Optional<Wrapper<PrintStream>> unwrap(final PrintStream printStream) {
         if (printStream instanceof PrintStreamWrapper) {
             return ((Wrapper<PrintStream>) printStream).getInnerWrapper();
         }
@@ -91,7 +91,7 @@ public interface PrintStreamWrapper extends Wrapper<PrintStream> {
      *
      * @return A Copying PrintStream
      */
-    static PrintStream copy(
+    public static PrintStream copy(
             final PrintStream left,
             final PrintStream right
     ) {
@@ -107,7 +107,7 @@ public interface PrintStreamWrapper extends Wrapper<PrintStream> {
      *
      * @return A String transforming PrintStream
      */
-    static PrintStream transform(
+    public static PrintStream transform(
             final PrintStream original,
             final StringTransform transformer
     ) {
@@ -123,7 +123,7 @@ public interface PrintStreamWrapper extends Wrapper<PrintStream> {
      *
      * @return A Byte transforming PrintStream
      */
-    static PrintStream transform(
+    public static PrintStream transform(
             final PrintStream original,
             final ByteTransform transformer
     ) {
@@ -135,7 +135,7 @@ public interface PrintStreamWrapper extends Wrapper<PrintStream> {
      *
      * @return The content of the PrintStreamWrapper as a PrintStream
      */
-    default PrintStream printStreamDelegate() {
+    public default PrintStream printStreamDelegate() {
         return getWrapperSubject();
     }
 
@@ -155,7 +155,7 @@ public interface PrintStreamWrapper extends Wrapper<PrintStream> {
      * @see PrintStream#print(char)
      * @see PrintStream#println(char)
      */
-    void write(int b);
+    public abstract void write(int b);
 
     /**
      * Writes len bytes from the specified byte array starting at offset off to this stream.
@@ -172,7 +172,7 @@ public interface PrintStreamWrapper extends Wrapper<PrintStream> {
      * @param off Offset from which to start taking bytes
      * @param len Number of bytes to write
      */
-    void write(
+    public abstract void write(
             byte[] buf,
             int off,
             int len
@@ -182,27 +182,27 @@ public interface PrintStreamWrapper extends Wrapper<PrintStream> {
      * A Function for filtering a String.
      */
     @FunctionalInterface
-    interface StringFilter extends Predicate<String> {
+    public static interface StringFilter extends Predicate<String> {
     }
 
     /**
      * A Function for filtering a Byte.
      */
     @FunctionalInterface
-    interface ByteFilter extends Predicate<Byte> {
+    public static interface ByteFilter extends Predicate<Byte> {
     }
 
     /**
      * A Function for transforming one String into another.
      */
     @FunctionalInterface
-    interface StringTransform extends Function<String, String> {
+    public static interface StringTransform extends Function<String, String> {
     }
 
     /**
      * A Function for transforming one Byte into another.
      */
     @FunctionalInterface
-    interface ByteTransform extends Function<Byte, Byte> {
+    public static interface ByteTransform extends Function<Byte, Byte> {
     }
 }
